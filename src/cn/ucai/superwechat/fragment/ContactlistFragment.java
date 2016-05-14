@@ -71,7 +71,7 @@ import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.db.EMUserDao;
 import cn.ucai.superwechat.db.InviteMessgeDao;
-import cn.ucai.superwechat.domain.User;
+import cn.ucai.superwechat.domain.EMUser;
 import cn.ucai.superwechat.utils.UserUtils;
 import cn.ucai.superwechat.widget.Sidebar;
 
@@ -82,7 +82,7 @@ import cn.ucai.superwechat.widget.Sidebar;
 public class ContactlistFragment extends Fragment {
 	public static final String TAG = "ContactlistFragment";
 	private ContactAdapter adapter;
-	private List<User> contactList;
+	private List<EMUser> contactList;
 	private ListView listView;
 	private boolean hidden;
 	private Sidebar sidebar;
@@ -189,7 +189,7 @@ public class ContactlistFragment extends Fragment {
         
 		//黑名单列表
 		blackList = EMContactManager.getInstance().getBlackListUsernames();
-		contactList = new ArrayList<User>();
+		contactList = new ArrayList<EMUser>();
 		// 获取设置contactlist
 //		getContactList();
         initContactList();
@@ -290,8 +290,8 @@ public class ContactlistFragment extends Fragment {
                 String username = adapter.getItem(position).getUserName();
                 if (Constant.NEW_FRIENDS_USERNAME.equals(username)) {
                     // 进入申请与通知页面
-                    User user = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME);
-                    user.setUnreadMsgCount(0);
+                    EMUser EMUser = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME);
+                    EMUser.setUnreadMsgCount(0);
                     startActivity(new Intent(getActivity(), NewFriendsMsgActivity.class));
                 } else if (Constant.GROUP_USERNAME.equals(username)) {
                     // 进入群聊列表页面
@@ -526,10 +526,10 @@ public class ContactlistFragment extends Fragment {
 //	private void getContactList() {
 //		contactList.clear();
 //		//获取本地好友列表
-//		Map<String, User> users = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList();
-//		Iterator<Entry<String, User>> iterator = users.entrySet().iterator();
+//		Map<String, EMUser> users = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList();
+//		Iterator<Entry<String, EMUser>> iterator = users.entrySet().iterator();
 //		while (iterator.hasNext()) {
-//			Entry<String, User> entry = iterator.next();
+//			Entry<String, EMUser> entry = iterator.next();
 //			if (!entry.getKey().equals(Constant.NEW_FRIENDS_USERNAME)
 //			        && !entry.getKey().equals(Constant.GROUP_USERNAME)
 //			        && !entry.getKey().equals(Constant.CHAT_ROOM)
@@ -538,10 +538,10 @@ public class ContactlistFragment extends Fragment {
 //				contactList.add(entry.getValue());
 //		}
 //		// 排序
-//		Collections.sort(contactList, new Comparator<User>() {
+//		Collections.sort(contactList, new Comparator<EMUser>() {
 //
 //			@Override
-//			public int compare(User lhs, User rhs) {
+//			public int compare(EMUser lhs, EMUser rhs) {
 //				return lhs.getUsername().compareTo(rhs.getUsername());
 //			}
 //		});

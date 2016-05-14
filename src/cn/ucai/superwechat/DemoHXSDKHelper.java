@@ -41,14 +41,13 @@ import com.easemob.chat.EMChatOptions;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.EMMessage.Type;
-import cn.ucai.superwechat.R;
 
 import cn.ucai.superwechat.activity.ChatActivity;
 import cn.ucai.superwechat.activity.MainActivity;
 import cn.ucai.superwechat.activity.VideoCallActivity;
 import cn.ucai.superwechat.activity.VoiceCallActivity;
+import cn.ucai.superwechat.domain.EMUser;
 import cn.ucai.superwechat.domain.RobotUser;
-import cn.ucai.superwechat.domain.User;
 import cn.ucai.superwechat.receiver.CallReceiver;
 import cn.ucai.superwechat.utils.CommonUtils;
 import com.easemob.util.EMLog;
@@ -71,7 +70,7 @@ public class DemoHXSDKHelper extends HXSDKHelper {
     /**
      * contact list in cache
      */
-    private Map<String, User> contactList;
+    private Map<String, EMUser> contactList;
     
     /**
      * robot list in cache
@@ -423,7 +422,7 @@ public class DemoHXSDKHelper extends HXSDKHelper {
      *
      * @return
      */
-    public Map<String, User> getContactList() {
+    public Map<String, EMUser> getContactList() {
         if (getHXId() != null && contactList == null) {
             contactList = ((DemoHXSDKModel) getModel()).getContactList();
         }
@@ -476,16 +475,16 @@ public class DemoHXSDKHelper extends HXSDKHelper {
      *
      * @param contactList
      */
-    public void setContactList(Map<String, User> contactList) {
+    public void setContactList(Map<String, EMUser> contactList) {
         this.contactList = contactList;
     }
     
     /**
      * 保存单个user 
      */
-    public void saveContact(User user){
-    	contactList.put(user.getUsername(), user);
-    	((DemoHXSDKModel) getModel()).saveContact(user);
+    public void saveContact(EMUser EMUser){
+    	contactList.put(EMUser.getUsername(), EMUser);
+    	((DemoHXSDKModel) getModel()).saveContact(EMUser);
     }
     
     @Override
@@ -533,15 +532,15 @@ public class DemoHXSDKHelper extends HXSDKHelper {
     }
 
     /**
-     * update User cach And db
+     * update EMUser cach And db
      *
      * @param contactList
      */
-    public void updateContactList(List<User> contactInfoList) {
-         for (User u : contactInfoList) {
+    public void updateContactList(List<EMUser> contactInfoList) {
+         for (EMUser u : contactInfoList) {
 			contactList.put(u.getUsername(), u);
          }
-         ArrayList<User> mList = new ArrayList<User>();
+         ArrayList<EMUser> mList = new ArrayList<EMUser>();
          mList.addAll(contactList.values());
         ((DemoHXSDKModel)getModel()).saveContactList(mList);
     }

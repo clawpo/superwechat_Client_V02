@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.ucai.superwechat.domain.RobotUser;
-import cn.ucai.superwechat.domain.User;
+import cn.ucai.superwechat.domain.EMUser;
 
 public class EMUserDao {
 	public static final String TABLE_NAME = "uers";
@@ -46,7 +46,7 @@ public class EMUserDao {
 	 * 
 	 * @param contactList
 	 */
-	public void saveContactList(List<User> contactList) {
+	public void saveContactList(List<EMUser> contactList) {
 	    DemoDBManager.getInstance().saveContactList(contactList);
 	}
 
@@ -55,7 +55,7 @@ public class EMUserDao {
 	 * 
 	 * @return
 	 */
-	public Map<String, User> getContactList() {
+	public Map<String, EMUser> getContactList() {
 		
 	    return DemoDBManager.getInstance().getContactList();
 	}
@@ -70,10 +70,10 @@ public class EMUserDao {
 	
 	/**
 	 * 保存一个联系人
-	 * @param user
+	 * @param EMUser
 	 */
-	public void saveContact(User user){
-	    DemoDBManager.getInstance().saveContact(user);
+	public void saveContact(EMUser EMUser){
+	    DemoDBManager.getInstance().saveContact(EMUser);
 	}
 	
 	public void setDisabledGroups(List<String> groups){
