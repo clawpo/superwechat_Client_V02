@@ -11,7 +11,7 @@ import java.util.HashMap;
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.activity.BaseActivity;
-import cn.ucai.superwechat.bean.UserBean;
+import cn.ucai.superwechat.bean.Contact;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.utils.Utils;
@@ -38,7 +38,7 @@ public class DownloadContactListTask extends BaseActivity {
     private void initPath(){
         try {
             path = new ApiParams()
-                    .with(I.User.USER_NAME, userName)
+                    .with(I.Contact.USER_NAME, userName)
                     .with(I.PAGE_ID, pageId + "")
                     .with(I.PAGE_SIZE, pageSize + "")
                     .getRequestUrl(I.REQUEST_DOWNLOAD_CONTACT_LIST);
@@ -48,25 +48,25 @@ public class DownloadContactListTask extends BaseActivity {
     }
 
     public void execute(){
-        executeRequest(new GsonRequest<UserBean[]>(path,UserBean[].class,
+        executeRequest(new GsonRequest<Contact[]>(path,Contact[].class,
                 responseDownloadUserListListener(), errorListener()));
     }
 
-    private Response.Listener<UserBean[]> responseDownloadUserListListener() {
-        return new Response.Listener<UserBean[]>(){
+    private Response.Listener<Contact[]> responseDownloadUserListListener() {
+        return new Response.Listener<Contact[]>(){
             @Override
-            public void onResponse(UserBean[] userList) {
+            public void onResponse(Contact[] userList) {
                 if(userList==null){
                     return;
                 }
-                ArrayList<UserBean> contactList = SuperWeChatApplication.getInstance().getContactList();
-                ArrayList<UserBean> users = Utils.array2List(userList);
+                ArrayList<Contact> contactList = SuperWeChatApplication.getInstance().getContactList();
+                ArrayList<Contact> users = Utils.array2List(userList);
                 contactList.clear();
                 contactList.addAll(users);
-                HashMap<String, UserBean> userBeanMap = SuperWeChatApplication.getInstance().getUserList();
-                HashMap<String, UserBean> userMap = new HashMap<String, UserBean>();
-                for (UserBean u : userList){
-                    userMap.put(u.getUserName(),u);
+                HashMap<String, Contact> userBeanMap = SuperWeChatApplication.getInstance().getUserList();
+                HashMap<String, Contact> userMap = new HashMap<String, Contact>();
+                for (Contact u : userList){
+                    userMap.put(u.getMContactCname(),u);
                 }
                 userBeanMap.clear();
                 userBeanMap.putAll(userMap);

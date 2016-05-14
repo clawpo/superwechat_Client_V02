@@ -23,14 +23,15 @@ import com.easemob.EMCallBack;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import cn.ucai.superwechat.bean.ContactBean;
-import cn.ucai.superwechat.bean.GroupBean;
-import cn.ucai.superwechat.bean.UserBean;
+import cn.ucai.superwechat.bean.Contact;
+import cn.ucai.superwechat.bean.Group;
+import cn.ucai.superwechat.bean.Member;
+import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.RequestManager;
 
 public class SuperWeChatApplication extends Application {
 
-	public static String SERVER_ROOT = "http://10.0.2.2:8080/SuperQQ4Server/Server";
+	public static String SERVER_ROOT = "http://10.0.2.2:8080/SuperWeChatServer";
 
 	public static Context applicationContext;
 	private static SuperWeChatApplication instance;
@@ -133,73 +134,63 @@ public class SuperWeChatApplication extends Application {
 	}
 
 	/**全局的当前登录用户对象*/
-	private UserBean user;
+	private User user;
 	/**全局的当前登录用户的好友列表*/
-	private ArrayList<UserBean> contactList = new ArrayList<UserBean>();
-
-	private HashMap<String,UserBean> userList = new HashMap<String, UserBean>();
-	/**全局的当前登录用户的联系人集合列表*/
-	private HashMap<Integer,ContactBean> contacts = new HashMap<Integer, ContactBean>();
+	private ArrayList<Contact> contactList = new ArrayList<Contact>();
+	/**全局的当前登录用户的好友集合*/
+	private HashMap<String,Contact> userList = new HashMap<String, Contact>();
 	/**全局的群组集合*/
-	private ArrayList<GroupBean> groupList = new ArrayList<GroupBean>();
+	private ArrayList<Group> groupList = new ArrayList<Group>();
 	/**全局的当前公共群列表*/
-	private ArrayList<GroupBean> publicGroupList = new ArrayList<GroupBean>();
-	/**临时的群组成员列表*/
-	private HashMap<String,ArrayList<UserBean>> groupMembers = new HashMap<String, ArrayList<UserBean>>();
+	private ArrayList<Group> publicGroupList = new ArrayList<Group>();
+	/**全局的群组成员列表*/
+	private HashMap<String,ArrayList<Member>> groupMembers = new HashMap<String, ArrayList<Member>>();
 
-	public UserBean getUser() {
+	public User getUser() {
 		return user;
 	}
 
-	public void setUser(UserBean user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
 
-	public ArrayList<UserBean> getContactList() {
+	public ArrayList<Contact> getContactList() {
 		return contactList;
 	}
 
-	public void setContactList(ArrayList<UserBean> contactList) {
+	public void setContactList(ArrayList<Contact> contactList) {
 		this.contactList = contactList;
 	}
 
-	public HashMap<String, UserBean> getUserList() {
+	public HashMap<String, Contact> getUserList() {
 		return userList;
 	}
 
-	public void setUserList(HashMap<String, UserBean> userList) {
+	public void setUserList(HashMap<String, Contact> userList) {
 		this.userList = userList;
 	}
 
-	public HashMap<Integer, ContactBean> getContacts() {
-		return contacts;
-	}
-
-	public void setContacts(HashMap<Integer, ContactBean> contacts) {
-		this.contacts = contacts;
-	}
-
-	public ArrayList<GroupBean> getGroupList() {
+	public ArrayList<Group> getGroupList() {
 		return groupList;
 	}
 
-	public void setGroupList(ArrayList<GroupBean> groupList) {
+	public void setGroupList(ArrayList<Group> groupList) {
 		this.groupList = groupList;
 	}
 
-	public ArrayList<GroupBean> getPublicGroupList() {
+	public ArrayList<Group> getPublicGroupList() {
 		return publicGroupList;
 	}
 
-	public void setPublicGroupList(ArrayList<GroupBean> publicGroupList) {
+	public void setPublicGroupList(ArrayList<Group> publicGroupList) {
 		this.publicGroupList = publicGroupList;
 	}
 
-	public HashMap<String, ArrayList<UserBean>> getGroupMembers() {
+	public HashMap<String, ArrayList<Member>> getGroupMembers() {
 		return groupMembers;
 	}
 
-	public void setGroupMembers(HashMap<String, ArrayList<UserBean>> groupMembers) {
+	public void setGroupMembers(HashMap<String, ArrayList<Member>> groupMembers) {
 		this.groupMembers = groupMembers;
 	}
 }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.activity.BaseActivity;
-import cn.ucai.superwechat.bean.GroupBean;
+import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.utils.Utils;
@@ -41,19 +41,19 @@ public class DownloadAllGroupTask extends BaseActivity {
     }
 
     public void execute(){
-        executeRequest(new GsonRequest<GroupBean[]>(path,GroupBean[].class,
+        executeRequest(new GsonRequest<Group[]>(path,Group[].class,
                 responseDownloadAllGroupListener(), errorListener()));
     }
 
-    private Response.Listener<GroupBean[]> responseDownloadAllGroupListener() {
-        return new Response.Listener<GroupBean[]>(){
+    private Response.Listener<Group[]> responseDownloadAllGroupListener() {
+        return new Response.Listener<Group[]>(){
             @Override
-            public void onResponse(GroupBean[] groupList) {
+            public void onResponse(Group[] groupList) {
                 if(groupList==null){
                     return;
                 }
-                ArrayList<GroupBean> list = SuperWeChatApplication.getInstance().getGroupList();
-                ArrayList<GroupBean> groups = Utils.array2List(groupList);
+                ArrayList<Group> list = SuperWeChatApplication.getInstance().getGroupList();
+                ArrayList<Group> groups = Utils.array2List(groupList);
                 list.addAll(groups);
                 Intent intent = new Intent("update_group");
                 mContext.sendStickyBroadcast(intent);

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.activity.BaseActivity;
-import cn.ucai.superwechat.bean.GroupBean;
+import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.utils.Utils;
@@ -48,20 +48,20 @@ public class DownloadPublicGroupTask extends BaseActivity {
     }
 
     public void execute(){
-        executeRequest(new GsonRequest<GroupBean[]>(path,GroupBean[].class,
+        executeRequest(new GsonRequest<Group[]>(path,Group[].class,
                 responseDownloadPublicGroupListener(), errorListener()));
     }
 
-    private Response.Listener<GroupBean[]> responseDownloadPublicGroupListener() {
-        return new Response.Listener<GroupBean[]>(){
+    private Response.Listener<Group[]> responseDownloadPublicGroupListener() {
+        return new Response.Listener<Group[]>(){
             @Override
-            public void onResponse(GroupBean[] groupList) {
+            public void onResponse(Group[] groupList) {
                 if(groupList==null){
                     return;
                 }
-                ArrayList<GroupBean> list = SuperWeChatApplication.getInstance().getPublicGroupList();
-                ArrayList<GroupBean> groups = Utils.array2List(groupList);
-                for(GroupBean g:groups){
+                ArrayList<Group> list = SuperWeChatApplication.getInstance().getPublicGroupList();
+                ArrayList<Group> groups = Utils.array2List(groupList);
+                for(Group g:groups){
                     if(!list.contains(g)){
                         list.add(g);
                     }

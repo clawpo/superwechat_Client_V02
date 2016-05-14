@@ -15,40 +15,25 @@ package cn.ucai.superwechat.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.toolbox.StringRequest;
 import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
 import com.easemob.exceptions.EaseMobException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Hashtable;
-import java.util.Map;
 
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
-import cn.ucai.superwechat.bean.MessageBean;
-import cn.ucai.superwechat.data.ApiParams;
-import cn.ucai.superwechat.data.GsonRequest;
-import cn.ucai.superwechat.data.MultipartRequest;
+import cn.ucai.superwechat.bean.Message;
+import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.listener.OnSetAvatarListener;
 import cn.ucai.superwechat.utils.ImageUtils;
 import cn.ucai.superwechat.utils.Utils;
@@ -159,72 +144,60 @@ public class RegisterActivity extends BaseActivity {
 	}
 
     private void registerAppServer(){
-        //先注册本地的服务器 REQUEST_REGISTER -->volley
-        //注册成功后，上传头像 uploadAvatar
+        //先注册本地的服务器并上传头像 REQUEST_REGISTER -->okhttp
         //注册环信的服务器 registerEMServer
         //如果环信的服务器注册失败，删除服务器上面的账号和头像 unRegister-->volley
-        try {
-            String path = new ApiParams()
-                    .with(I.User.USER_NAME,username)
-                    .with(I.User.NICK,nick)
-                    .with(I.User.PASSWORD,pwd)
-                    .getRequestUrl(I.REQUEST_REGISTER);
-			Log.e(TAG,"path="+path);
-            executeRequest(new GsonRequest<MessageBean>(path,MessageBean.class,
-                    responseRegisterListener(), errorListener()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    private Response.Listener<MessageBean> responseRegisterListener() {
-        return new Response.Listener<MessageBean>() {
-            @Override
-            public void onResponse(MessageBean messageBean) {
-                Log.e(TAG,"messageBean="+messageBean);
-                if(messageBean!=null&&messageBean.isSuccess()){
-//                    uploadAvatar();
-                    uploadAvatarByMultipart();
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                boolean isSuccess = false;//NetUtil.uploadAvatar(mContext, "user_avatar", username);
-                                if(isSuccess){
-                                    registerEMServer();
-                                } else {
-                                    pd.dismiss();
-                                    Utils.showToast(mContext,R.string.upload_avatar_failed,Toast.LENGTH_SHORT);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+
+        File file = new File(ImageUtils.getAvatarPath(activity, I.AVATAR_TYPE_USER_PATH),
+                username + I.AVATAR_SUFFIX_JPG);
+//        String extName = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf("."));
+        OkHttpUtils<Message> utils = new OkHttpUtils<Message>();
+        utils.url(SuperWeChatApplication.SERVER_ROOT)//设置服务端根地址
+                .addParam(I.KEY_REQUEST, I.REQUEST_REGISTER)//添加上传的请求参数
+                .addParam(I.User.USER_NAME, username)//添加用户的账号
+                .addParam(I.User.NICK,nick)//添加用户的昵称
+                .addParam(I.User.PASSWORD,pwd)//添加用户的密码
+                .targetClass(Message.class)//设置服务端返回json数据的解析类型
+                .addFile(file)//添加上传的文件
+                .execute(new OkHttpUtils.OnCompleteListener<Message>() {//执行请求，并处理返回结果
+                    @Override
+                    public void onSuccess(Message msg) {
+                        if(msg.isResult()){
+                            registerEMServer();
+                        } else {
+                            Utils.showToast(mContext,Utils.getResourceString(mContext,msg.getMsg()),Toast.LENGTH_SHORT);
+                            unRegister();
                         }
-                    }).start();
-                }else{
-                    try {
-                        String path = new ApiParams()
-                                .with(I.User.USER_NAME,username)
-                                .getRequestUrl(I.REQUEST_UNREGISTER);
-                        executeRequest(new GsonRequest<MessageBean>(path,MessageBean.class,
-                                responseUnRegisterListener(),errorListener()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
-                    pd.dismiss();
-                    Utils.showToast(mContext,R.string.Registration_failed,Toast.LENGTH_SHORT);
-                }
-            }
-        };
+
+                    @Override
+                    public void onError(String error) {
+                        pd.dismiss();
+                        Utils.showToast(mContext,R.string.Registration_failed,Toast.LENGTH_SHORT);
+                        Log.e(TAG, error);
+                    }
+                });
     }
-    private Response.Listener<MessageBean> responseUnRegisterListener() {
-        return new Response.Listener<MessageBean>() {
-            @Override
-            public void onResponse(MessageBean messageBean) {
-                if(!messageBean.isSuccess()){
-                    Utils.showToast(mContext,R.string.cancel_register_failed,Toast.LENGTH_SHORT);
-                }
-            }
-        };
+
+    private void unRegister(){
+        OkHttpUtils<Message> utils = new OkHttpUtils<Message>();
+        utils.url(SuperWeChatApplication.SERVER_ROOT)//设置服务端根地址
+                .addParam(I.KEY_REQUEST, I.REQUEST_UNREGISTER)//添加上传的请求参数
+                .addParam(I.User.USER_NAME, username)//添加用户的账号
+                .targetClass(Message.class)//设置服务端返回json数据的解析类型
+                .execute(new OkHttpUtils.OnCompleteListener<Message>() {//执行请求，并处理返回结果
+                    @Override
+                    public void onSuccess(Message msg) {
+                        pd.dismiss();
+                        Utils.showToast(mContext,R.string.Registration_failed,Toast.LENGTH_SHORT);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        pd.dismiss();
+                        Log.e(TAG, error);
+                    }
+                });
     }
 
 	private void initView() {
@@ -285,97 +258,6 @@ public class RegisterActivity extends BaseActivity {
             Utils.showToast(mContext,"请先输入用户名",Toast.LENGTH_SHORT);
             return null;
         }
-
         return username;
-    }
-
-	public byte[] getImageBytes(Bitmap bmp){
-        if(bmp==null)return null;
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		bmp.compress(Bitmap.CompressFormat.JPEG,100,baos);
-		byte[] imageBytes = baos.toByteArray();
-        return imageBytes;
-	}
-    //图片转化成base64字符串
-    public static String GetImageStr(String filePath) {
-        //将图片文件转化为字节数组字符串，并对其进行Base64编码处理
-        InputStream in = null;
-        byte[] data = null;
-        //读取图片字节数组
-        try {
-            in = new FileInputStream(filePath);
-            data = new byte[in.available()];
-            in.read(data);
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //对字节数组Base64编码
-        //返回Base64编码过的字节数组字符串
-        return Base64.encodeToString(data,Base64.DEFAULT);
-    }
-	private void uploadAvatar(){
-        //Showing the progress dialog
-        String url=SuperWeChatApplication.SERVER_ROOT+"?"+I.KEY_REQUEST+"="+I.REQUEST_UPLOAD_AVATAR
-                +"&"+I.User.USER_NAME+"="+username
-                +"&"+I.AVATAR_TYPE+"=user_avatar";
-        executeRequest(new StringRequest(Request.Method.POST,url,uploadResponseListener(),errorListener()){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                File file = new File(ImageUtils.getAvatarPath(activity, "user_avatar"),
-                        username + ".jpg");
-                String path = file.getAbsolutePath();
-//                bitmap = BitmapFactory.decodeFile(path);
-                //Converting Bitmap to String
-//                String image = getStringImage(bitmap);
-                String image = GetImageStr(path);
-                //Creating parameters
-                Map<String,String> params = new Hashtable<String, String>();
-
-                //Adding parameters
-                params.put("image", image);
-                params.put("userName", username);
-
-                //returning parameters
-                return params;
-            }
-        });
-	}
-
-    private Response.Listener<String> uploadResponseListener() {
-        return new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                Utils.showToast(mContext,"upload avatar success!",Toast.LENGTH_SHORT);
-            }
-        };
-    }
-    private final String boundary = "apiclient-" + System.currentTimeMillis();
-    private final String mimeType = "multipart/form-data;boundary=" + boundary;
-    private byte[] multipartBody;
-    private Bitmap bitmap;
-    private void uploadAvatarByMultipart(){
-//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//        DataOutputStream dos = new DataOutputStream(bos);
-        File file = new File(ImageUtils.getAvatarPath(activity, "user_avatar"),
-                username + ".jpg");
-        String path = file.getAbsolutePath();
-        bitmap = BitmapFactory.decodeFile(path);
-        multipartBody = getImageBytes(bitmap);
-        Log.e(TAG,"mimeType="+mimeType);
-        String url=SuperWeChatApplication.SERVER_ROOT+"?"+I.KEY_REQUEST+"="+I.REQUEST_UPLOAD_AVATAR
-                +"&"+I.User.USER_NAME+"="+username
-                +"&"+I.AVATAR_TYPE+"=user_avatar";
-        executeRequest(new MultipartRequest<MessageBean>(url,MessageBean.class,null,
-                uploadAvatarByMultipartListener(),errorListener(),mimeType, multipartBody));
-    }
-
-    private Response.Listener<MessageBean> uploadAvatarByMultipartListener() {
-        return new Response.Listener<MessageBean>() {
-            @Override
-            public void onResponse(MessageBean messageBean) {
-                Utils.showToast(mContext,"upload avatar success!!!",Toast.LENGTH_SHORT);
-            }
-        };
     }
 }

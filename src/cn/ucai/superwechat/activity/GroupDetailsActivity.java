@@ -252,8 +252,8 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 					progressDialog.show();
                     try {
                         String path = new ApiParams()
-                                .with(I.Group.GROUP_NAME, mGroup.getName())
-                                .with(I.Group.NEW_NAME, returnData)
+                                .with(I.Group.GROUP_ID, mGroup.getGroupId())
+                                .with(I.Group.NAME, returnData)
                                 .getRequestUrl(I.REQUEST_UPDATE_GROUP_NAME);
                         executeRequest(new GsonRequest<MessageBean>(path, MessageBean.class,
                                 new Response.Listener<MessageBean>() {
@@ -379,8 +379,8 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 			public void run() {
 				try {
                     String username=SuperWeChatApplication.getInstance().getUserName();
-                    String path = new ApiParams().with(I.Group.GROUP_NAME, mGroup.getName())
-                            .with(I.Group.MEMBERS, username)
+                    String path = new ApiParams().with(I.Member.GROUP_ID, mGroup.getGroupId())
+                            .with(I.Member.USER_NAME, username)
                             .getRequestUrl(I.REQUEST_DELETE_GROUP_MEMBER);
                     executeRequest(new GsonRequest<Boolean>(path, Boolean.class,
                             new Response.Listener<Boolean>() {
@@ -424,7 +424,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-                    String path = new ApiParams().with(I.Group.GROUP_NAME, mGroup.getName())
+                    String path = new ApiParams().with(I.Group.GROUP_ID, mGroup.getGroupId())
                             .getRequestUrl(I.REQUEST_DELETE_GROUP);
                     executeRequest(new GsonRequest<MessageBean>(path, MessageBean.class,
                             new Response.Listener<MessageBean>() {

@@ -12,8 +12,7 @@ import java.util.HashMap;
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.activity.BaseActivity;
-import cn.ucai.superwechat.bean.GroupBean;
-import cn.ucai.superwechat.bean.UserBean;
+import cn.ucai.superwechat.bean.Member;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.utils.Utils;
@@ -26,7 +25,6 @@ public class DownloadAllGroupMembersTask extends BaseActivity {
     Context mContext;
     String groupId;
     String path;
-    ArrayList<GroupBean> groupList;
 
     public DownloadAllGroupMembersTask(Context context, String groupId) {
         this.mContext = context;
@@ -38,7 +36,7 @@ public class DownloadAllGroupMembersTask extends BaseActivity {
     private void initPath(){
         try {
             path = new ApiParams()
-                    .with(I.Group.GROUP_ID, groupId)
+                    .with(I.Member.GROUP_ID, groupId)
                     .getRequestUrl(I.REQUEST_DOWNLOAD_GROUP_MEMBERS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -46,21 +44,21 @@ public class DownloadAllGroupMembersTask extends BaseActivity {
     }
 
     public void execute(){
-        executeRequest(new GsonRequest<UserBean[]>(path,UserBean[].class,
+        executeRequest(new GsonRequest<Member[]>(path,Member[].class,
                 responseDownloadGroupMembersListener(), errorListener()));
     }
 
-    private Response.Listener<UserBean[]> responseDownloadGroupMembersListener() {
-        return new Response.Listener<UserBean[]>(){
+    private Response.Listener<Member[]> responseDownloadGroupMembersListener() {
+        return new Response.Listener<Member[]>(){
             @Override
-            public void onResponse(UserBean[] userList) {
+            public void onResponse(Member[] userList) {
                 if(userList==null){
                     return;
                 }
                 Log.e(TAG,"responseDownloadGroupMembersListener,userList.length="+userList.length);
-                HashMap<String, ArrayList<UserBean>> groupMembers =
+                HashMap<String, ArrayList<Member>> groupMembers =
                         SuperWeChatApplication.getInstance().getGroupMembers();
-                ArrayList<UserBean> users = Utils.array2List(userList);
+                ArrayList<Member> users = Utils.array2List(userList);
                 groupMembers.put(groupId,users);
                 Intent intent = new Intent("update_group_member");
                 mContext.sendStickyBroadcast(intent);
