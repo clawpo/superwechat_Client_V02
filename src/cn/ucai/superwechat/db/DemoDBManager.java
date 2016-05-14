@@ -39,13 +39,13 @@ public class DemoDBManager {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         if (db.isOpen()) {
             db.delete(EMUserDao.TABLE_NAME, null, null);
-            for (EMUser EMUser : contactList) {
+            for (EMUser user : contactList) {
                 ContentValues values = new ContentValues();
-                values.put(EMUserDao.COLUMN_NAME_ID, EMUser.getUsername());
-                if(EMUser.getNick() != null)
-                    values.put(EMUserDao.COLUMN_NAME_NICK, EMUser.getNick());
-                if(EMUser.getAvatar() != null)
-                    values.put(EMUserDao.COLUMN_NAME_AVATAR, EMUser.getAvatar());
+                values.put(EMUserDao.COLUMN_NAME_ID, user.getUsername());
+                if(user.getNick() != null)
+                    values.put(EMUserDao.COLUMN_NAME_NICK, user.getNick());
+                if(user.getAvatar() != null)
+                    values.put(EMUserDao.COLUMN_NAME_AVATAR, user.getAvatar());
                 db.replace(EMUserDao.TABLE_NAME, null, values);
             }
         }
@@ -65,31 +65,31 @@ public class DemoDBManager {
                 String username = cursor.getString(cursor.getColumnIndex(EMUserDao.COLUMN_NAME_ID));
                 String nick = cursor.getString(cursor.getColumnIndex(EMUserDao.COLUMN_NAME_NICK));
                 String avatar = cursor.getString(cursor.getColumnIndex(EMUserDao.COLUMN_NAME_AVATAR));
-                EMUser EMUser = new EMUser();
-                EMUser.setUsername(username);
-                EMUser.setNick(nick);
-                EMUser.setAvatar(avatar);
+                EMUser user = new EMUser();
+                user.setUsername(username);
+                user.setNick(nick);
+                user.setAvatar(avatar);
                 String headerName = null;
-                if (!TextUtils.isEmpty(EMUser.getNick())) {
-                    headerName = EMUser.getNick();
+                if (!TextUtils.isEmpty(user.getNick())) {
+                    headerName = user.getNick();
                 } else {
-                    headerName = EMUser.getUsername();
+                    headerName = user.getUsername();
                 }
                 
                 if (username.equals(Constant.NEW_FRIENDS_USERNAME) || username.equals(Constant.GROUP_USERNAME)
                         || username.equals(Constant.CHAT_ROOM)|| username.equals(Constant.CHAT_ROBOT)) {
-                    EMUser.setHeader("");
+                    user.setHeader("");
                 } else if (Character.isDigit(headerName.charAt(0))) {
-                    EMUser.setHeader("#");
+                    user.setHeader("#");
                 } else {
-                    EMUser.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1))
+                    user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1))
                             .get(0).target.substring(0, 1).toUpperCase());
-                    char header = EMUser.getHeader().toLowerCase().charAt(0);
+                    char header = user.getHeader().toLowerCase().charAt(0);
                     if (header < 'a' || header > 'z') {
-                        EMUser.setHeader("#");
+                        user.setHeader("#");
                     }
                 }
-                users.put(username, EMUser);
+                users.put(username, user);
             }
             cursor.close();
         }
@@ -111,14 +111,14 @@ public class DemoDBManager {
      * 保存一个联系人
      * @param EMUser
      */
-    synchronized public void saveContact(EMUser EMUser){
+    synchronized public void saveContact(EMUser user){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(EMUserDao.COLUMN_NAME_ID, EMUser.getUsername());
-        if(EMUser.getNick() != null)
-            values.put(EMUserDao.COLUMN_NAME_NICK, EMUser.getNick());
-        if(EMUser.getAvatar() != null)
-            values.put(EMUserDao.COLUMN_NAME_AVATAR, EMUser.getAvatar());
+        values.put(EMUserDao.COLUMN_NAME_ID, user.getUsername());
+        if(user.getNick() != null)
+            values.put(EMUserDao.COLUMN_NAME_NICK, user.getNick());
+        if(user.getAvatar() != null)
+            values.put(EMUserDao.COLUMN_NAME_AVATAR, user.getAvatar());
         if(db.isOpen()){
             db.replace(EMUserDao.TABLE_NAME, null, values);
         }

@@ -93,15 +93,15 @@ public class ParseManager {
 				if (arg0 != null) {
 					List<EMUser> mList = new ArrayList<EMUser>();
 					for (ParseObject pObject : arg0) {
-						EMUser EMUser = new EMUser();
+						EMUser user = new EMUser();
 						ParseFile parseFile = pObject.getParseFile(CONFIG_AVATAR);
 						if (parseFile != null) {
-							EMUser.setAvatar(parseFile.getUrl());
+							user.setAvatar(parseFile.getUrl());
 						}
-						EMUser.setNick(pObject.getString(CONFIG_NICK));
-						EMUser.setUsername(pObject.getString(CONFIG_USERNAME));
-						setUserHearder(EMUser);
-						mList.add(EMUser);
+						user.setNick(pObject.getString(CONFIG_NICK));
+						user.setUsername(pObject.getString(CONFIG_USERNAME));
+						setUserHearder(user);
+						mList.add(user);
 					}
 					callback.onSuccess(mList);
 				} else {
@@ -117,21 +117,21 @@ public class ParseManager {
      * @param username
      * @param EMUser
      */
-    private static void setUserHearder(EMUser EMUser) {
+    private static void setUserHearder(EMUser user) {
         String headerName = null;
-        if (!TextUtils.isEmpty(EMUser.getNick())) {
-            headerName = EMUser.getNick();
+        if (!TextUtils.isEmpty(user.getNick())) {
+            headerName = user.getNick();
         } else {
-            headerName = EMUser.getUsername();
+            headerName = user.getUsername();
         }
         if (Character.isDigit(headerName.charAt(0))) {
-            EMUser.setHeader("#");
+            user.setHeader("#");
         } else {
-            EMUser.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1)
+            user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1)
                     .toUpperCase());
-            char header = EMUser.getHeader().toLowerCase().charAt(0);
+            char header = user.getHeader().toLowerCase().charAt(0);
             if (header < 'a' || header > 'z') {
-                EMUser.setHeader("#");
+                user.setHeader("#");
             }
         }
     }
@@ -177,14 +177,14 @@ public class ParseManager {
 					String nick = pUser.getString(CONFIG_NICK);
 					ParseFile pFile = pUser.getParseFile(CONFIG_AVATAR);
 					if(callback!=null){
-						EMUser EMUser = UserUtils.getUserInfo(username);
-						if(EMUser !=null){
-							EMUser.setNick(nick);
+						EMUser user = UserUtils.getUserInfo(username);
+						if(user !=null){
+							user.setNick(nick);
 							if (pFile != null && pFile.getUrl() != null) {
-								EMUser.setAvatar(pFile.getUrl());
+								user.setAvatar(pFile.getUrl());
 							}
 						}
-						callback.onSuccess(EMUser);
+						callback.onSuccess(user);
 					}
 				}else{
 					if(callback!=null){

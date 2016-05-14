@@ -96,7 +96,7 @@ public class User extends Location implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return "EMUser [MUserId=" + MUserId + ", MUserName=" + MUserName
+		return "User [MUserId=" + MUserId + ", MUserName=" + MUserName
 				+ ", MUserPassword=" + MUserPassword + ", MUserNick="
 				+ MUserNick + ", MUserUnreadMsgCount=" + MUserUnreadMsgCount
 				+ ", header=" + header + "]";

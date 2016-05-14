@@ -482,9 +482,9 @@ public class DemoHXSDKHelper extends HXSDKHelper {
     /**
      * 保存单个user 
      */
-    public void saveContact(EMUser EMUser){
-    	contactList.put(EMUser.getUsername(), EMUser);
-    	((DemoHXSDKModel) getModel()).saveContact(EMUser);
+    public void saveContact(EMUser user){
+    	contactList.put(user.getUsername(), user);
+    	((DemoHXSDKModel) getModel()).saveContact(user);
     }
     
     @Override

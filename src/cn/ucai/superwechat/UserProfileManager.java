@@ -34,7 +34,7 @@ public class UserProfileManager {
 
 	private boolean isSyncingContactInfosWithServer = false;
 
-	private EMUser currentEMUser;
+	private EMUser currentUser;
 
 	public UserProfileManager() {
 	}
@@ -111,19 +111,19 @@ public class UserProfileManager {
 
 	synchronized void reset() {
 		isSyncingContactInfosWithServer = false;
-		currentEMUser = null;
+		currentUser = null;
 		HXPreferenceUtils.getInstance().removeCurrentUserInfo();
 	}
 
 	public synchronized EMUser getCurrentUserInfo() {
-		if (currentEMUser == null) {
+		if (currentUser == null) {
 			String username = EMChatManager.getInstance().getCurrentUser();
-			currentEMUser = new EMUser(username);
+			currentUser = new EMUser(username);
 			String nick = getCurrentUserNick();
-			currentEMUser.setNick((nick != null) ? nick : username);
-			currentEMUser.setAvatar(getCurrentUserAvatar());
+			currentUser.setNick((nick != null) ? nick : username);
+			currentUser.setAvatar(getCurrentUserAvatar());
 		}
-		return currentEMUser;
+		return currentUser;
 	}
 
 	public boolean updateParseNickName(final String nickname) {

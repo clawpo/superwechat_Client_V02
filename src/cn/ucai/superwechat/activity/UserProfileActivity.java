@@ -180,15 +180,15 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
                 .asyncGetUserInfo(username, new EMValueCallBack<EMUser>() {
 			
 			@Override
-			public void onSuccess(EMUser EMUser) {
-				if (EMUser != null) {
-					tvNickName.setText(EMUser.getNick());
-					if(!TextUtils.isEmpty(EMUser.getAvatar())){
-						 Picasso.with(UserProfileActivity.this).load(EMUser.getAvatar()).placeholder(R.drawable.default_avatar).into(headAvatar);
+			public void onSuccess(EMUser user) {
+				if (user != null) {
+					tvNickName.setText(user.getNick());
+					if(!TextUtils.isEmpty(user.getAvatar())){
+						 Picasso.with(UserProfileActivity.this).load(user.getAvatar()).placeholder(R.drawable.default_avatar).into(headAvatar);
 					}else{
 						Picasso.with(UserProfileActivity.this).load(R.drawable.default_avatar).into(headAvatar);
 					}
-					UserUtils.saveUserInfo(EMUser);
+					UserUtils.saveUserInfo(user);
 				}
 			}
 			

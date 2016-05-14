@@ -30,17 +30,17 @@ public class UserUtils {
      * @return
      */
     public static EMUser getUserInfo(String username){
-        EMUser EMUser = ((DemoHXSDKHelper) HXSDKHelper.getInstance()).getContactList().get(username);
-        if(EMUser == null){
-            EMUser = new EMUser(username);
+        EMUser user = ((DemoHXSDKHelper) HXSDKHelper.getInstance()).getContactList().get(username);
+        if(user == null){
+            user = new EMUser(username);
         }
             
-        if(EMUser != null){
+        if(user != null){
             //demo没有这些数据，临时填充
-        	if(TextUtils.isEmpty(EMUser.getNick()))
-        		EMUser.setNick(username);
+        	if(TextUtils.isEmpty(user.getNick()))
+        		user.setNick(username);
         }
-        return EMUser;
+        return user;
     }
 
     public static UserBean getUserBeanInfo(String username){
@@ -87,9 +87,9 @@ public class UserUtils {
      * @param username
      */
     public static void setUserAvatar(Context context, String username, ImageView imageView){
-    	EMUser EMUser = getUserInfo(username);
-        if(EMUser != null && EMUser.getAvatar() != null){
-            Picasso.with(context).load(EMUser.getAvatar()).placeholder(R.drawable.default_avatar).into(imageView);
+    	EMUser user = getUserInfo(username);
+        if(user != null && user.getAvatar() != null){
+            Picasso.with(context).load(user.getAvatar()).placeholder(R.drawable.default_avatar).into(imageView);
         }else{
             Picasso.with(context).load(R.drawable.default_avatar).into(imageView);
         }
@@ -120,9 +120,9 @@ public class UserUtils {
      * 设置当前用户头像
      */
 	public static void setCurrentUserAvatar(Context context, ImageView imageView) {
-		EMUser EMUser = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getUserProfileManager().getCurrentUserInfo();
-		if (EMUser != null && EMUser.getAvatar() != null) {
-			Picasso.with(context).load(EMUser.getAvatar()).placeholder(R.drawable.default_avatar).into(imageView);
+		EMUser user = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getUserProfileManager().getCurrentUserInfo();
+		if (user != null && user.getAvatar() != null) {
+			Picasso.with(context).load(user.getAvatar()).placeholder(R.drawable.default_avatar).into(imageView);
 		} else {
 			Picasso.with(context).load(R.drawable.default_avatar).into(imageView);
 		}
@@ -164,9 +164,9 @@ public class UserUtils {
      * 设置用户昵称
      */
     public static void setUserNick(String username,TextView textView){
-    	EMUser EMUser = getUserInfo(username);
-    	if(EMUser != null){
-    		textView.setText(EMUser.getNick());
+    	EMUser user = getUserInfo(username);
+    	if(user != null){
+    		textView.setText(user.getNick());
     	}else{
     		textView.setText(username);
     	}
@@ -208,9 +208,9 @@ public class UserUtils {
      * 设置当前用户昵称
      */
     public static void setCurrentUserNick(TextView textView){
-        EMUser EMUser = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getUserProfileManager().getCurrentUserInfo();
+        EMUser user = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getUserProfileManager().getCurrentUserInfo();
         if(textView != null){
-            textView.setText(EMUser.getNick());
+            textView.setText(user.getNick());
         }
     }
 
@@ -226,13 +226,13 @@ public class UserUtils {
     
     /**
      * 保存或更新某个用户
-     * @param newEMUser
+     * @param newUser
      */
-	public static void saveUserInfo(EMUser newEMUser) {
-		if (newEMUser == null || newEMUser.getUsername() == null) {
+	public static void saveUserInfo(EMUser newUser) {
+		if (newUser == null || newUser.getUsername() == null) {
 			return;
 		}
-		((DemoHXSDKHelper) HXSDKHelper.getInstance()).saveContact(newEMUser);
+		((DemoHXSDKHelper) HXSDKHelper.getInstance()).saveContact(newUser);
 	}
 
 

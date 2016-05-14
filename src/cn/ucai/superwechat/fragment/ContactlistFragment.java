@@ -290,8 +290,8 @@ public class ContactlistFragment extends Fragment {
                 String username = adapter.getItem(position).getUserName();
                 if (Constant.NEW_FRIENDS_USERNAME.equals(username)) {
                     // 进入申请与通知页面
-                    EMUser EMUser = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME);
-                    EMUser.setUnreadMsgCount(0);
+                    EMUser user = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME);
+                    user.setUnreadMsgCount(0);
                     startActivity(new Intent(getActivity(), NewFriendsMsgActivity.class));
                 } else if (Constant.GROUP_USERNAME.equals(username)) {
                     // 进入群聊列表页面
@@ -526,10 +526,10 @@ public class ContactlistFragment extends Fragment {
 //	private void getContactList() {
 //		contactList.clear();
 //		//获取本地好友列表
-//		Map<String, EMUser> users = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList();
-//		Iterator<Entry<String, EMUser>> iterator = users.entrySet().iterator();
+//		Map<String, User> users = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList();
+//		Iterator<Entry<String, User>> iterator = users.entrySet().iterator();
 //		while (iterator.hasNext()) {
-//			Entry<String, EMUser> entry = iterator.next();
+//			Entry<String, User> entry = iterator.next();
 //			if (!entry.getKey().equals(Constant.NEW_FRIENDS_USERNAME)
 //			        && !entry.getKey().equals(Constant.GROUP_USERNAME)
 //			        && !entry.getKey().equals(Constant.CHAT_ROOM)
@@ -538,10 +538,10 @@ public class ContactlistFragment extends Fragment {
 //				contactList.add(entry.getValue());
 //		}
 //		// 排序
-//		Collections.sort(contactList, new Comparator<EMUser>() {
+//		Collections.sort(contactList, new Comparator<User>() {
 //
 //			@Override
-//			public int compare(EMUser lhs, EMUser rhs) {
+//			public int compare(User lhs, User rhs) {
 //				return lhs.getUsername().compareTo(rhs.getUsername());
 //			}
 //		});

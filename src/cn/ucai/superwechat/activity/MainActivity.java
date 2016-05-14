@@ -221,10 +221,10 @@ public class MainActivity extends BaseActivity implements EMEventListener {
                 EMLog.d("roster", "contacts size: " + usernames.size());
                 Map<String, EMUser> userlist = new HashMap<String, EMUser>();
                 for (String username : usernames) {
-                    EMUser EMUser = new EMUser();
-                    EMUser.setUsername(username);
-                    setUserHearder(username, EMUser);
-                    userlist.put(username, EMUser);
+                    EMUser user = new EMUser();
+                    user.setUsername(username);
+                    setUserHearder(username, user);
+                    userlist.put(username, user);
                 }
                 // 添加user"申请与通知"
                 EMUser newFriends = new EMUser();
@@ -234,15 +234,15 @@ public class MainActivity extends BaseActivity implements EMEventListener {
         
                 userlist.put(Constant.NEW_FRIENDS_USERNAME, newFriends);
                 // 添加"群聊"
-                EMUser groupEMUser = new EMUser();
+                EMUser groupUser = new EMUser();
                 String strGroup = context.getString(R.string.group_chat);
-                groupEMUser.setUsername(Constant.GROUP_USERNAME);
-                groupEMUser.setNick(strGroup);
-                groupEMUser.setHeader("");
-                userlist.put(Constant.GROUP_USERNAME, groupEMUser);
+                groupUser.setUsername(Constant.GROUP_USERNAME);
+                groupUser.setNick(strGroup);
+                groupUser.setHeader("");
+                userlist.put(Constant.GROUP_USERNAME, groupUser);
                 
 //                 // 添加"聊天室"
-//                EMUser chatRoomItem = new EMUser();
+//                User chatRoomItem = new User();
 //                String strChatRoom = context.getString(R.string.chat_room);
 //                chatRoomItem.setUsername(Constant.CHAT_ROOM);
 //                chatRoomItem.setNick(strChatRoom);
@@ -250,7 +250,7 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 //                userlist.put(Constant.CHAT_ROOM, chatRoomItem);
 //
 //                // 添加"Robot"
-//        		EMUser robotUser = new EMUser();
+//        		User robotUser = new User();
 //        		String strRobot = context.getString(R.string.robot_chat);
 //        		robotUser.setUsername(Constant.CHAT_ROBOT);
 //        		robotUser.setNick(strRobot);
@@ -261,8 +261,8 @@ public class MainActivity extends BaseActivity implements EMEventListener {
                 ((DemoHXSDKHelper)HXSDKHelper.getInstance()).setContactList(userlist);
                  // 存入db
                 EMUserDao dao = new EMUserDao(context);
-                List<EMUser> EMUsers = new ArrayList<EMUser>(userlist.values());
-                dao.saveContactList(EMUsers);
+                List<EMUser> users = new ArrayList<EMUser>(userlist.values());
+                dao.saveContactList(users);
 
                 HXSDKHelper.getInstance().notifyContactsSyncListener(true);
                 
@@ -315,23 +315,23 @@ public class MainActivity extends BaseActivity implements EMEventListener {
      * @param username
      * @param EMUser
      */
-    private static void setUserHearder(String username, EMUser EMUser) {
+    private static void setUserHearder(String username, EMUser user) {
         String headerName = null;
-        if (!TextUtils.isEmpty(EMUser.getNick())) {
-            headerName = EMUser.getNick();
+        if (!TextUtils.isEmpty(user.getNick())) {
+            headerName = user.getNick();
         } else {
-            headerName = EMUser.getUsername();
+            headerName = user.getUsername();
         }
         if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
-            EMUser.setHeader("");
+            user.setHeader("");
         } else if (Character.isDigit(headerName.charAt(0))) {
-            EMUser.setHeader("#");
+            user.setHeader("#");
         } else {
-            EMUser.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1)
+            user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1)
                     .toUpperCase());
-            char header = EMUser.getHeader().toLowerCase().charAt(0);
+            char header = user.getHeader().toLowerCase().charAt(0);
             if (header < 'a' || header > 'z') {
-                EMUser.setHeader("#");
+                user.setHeader("#");
             }
         }
     }
@@ -536,17 +536,17 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 			ArrayList<String> toAddUserNames = new ArrayList<String>();
             boolean isAdd = false;
 			for (String username : usernameList) {
-				EMUser EMUser = setUserHead(username);
+				EMUser user = setUserHead(username);
 				// 添加好友时可能会回调added方法两次
 				if (!localUsers.containsKey(username)) {
-					EMUserDao.saveContact(EMUser);
+					EMUserDao.saveContact(user);
                     isAdd = true;
 				}
 				UserBean u = new UserBean(username);
 				if (!contactList.contains(u)){
 					toAddUserNames.add(username);
 				}
-				toAddUsers.put(username, EMUser);
+				toAddUsers.put(username, user);
 			}
 			localUsers.putAll(toAddUsers);
 			for (String name : toAddUserNames) {
@@ -1035,9 +1035,9 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 		// 保存msg
 		inviteMessgeDao.saveMessage(msg);
 		// 未读数加1
-		EMUser EMUser = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME);
-		if (EMUser.getUnreadMsgCount() == 0)
-			EMUser.setUnreadMsgCount(EMUser.getUnreadMsgCount() + 1);
+		EMUser user = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME);
+		if (user.getUnreadMsgCount() == 0)
+			user.setUnreadMsgCount(user.getUnreadMsgCount() + 1);
 	}
 
 	/**
@@ -1047,27 +1047,27 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 	 * @return
 	 */
 	EMUser setUserHead(String username) {
-		EMUser EMUser = new EMUser();
-		EMUser.setUsername(username);
+		EMUser user = new EMUser();
+		user.setUsername(username);
 		String headerName = null;
-		if (!TextUtils.isEmpty(EMUser.getNick())) {
-			headerName = EMUser.getNick();
+		if (!TextUtils.isEmpty(user.getNick())) {
+			headerName = user.getNick();
 		} else {
-			headerName = EMUser.getUsername();
+			headerName = user.getUsername();
 		}
 		if (username.equals(Constant.NEW_FRIENDS_USERNAME)) {
-			EMUser.setHeader("");
+			user.setHeader("");
 		} else if (Character.isDigit(headerName.charAt(0))) {
-			EMUser.setHeader("#");
+			user.setHeader("#");
 		} else {
-			EMUser.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1)
+			user.setHeader(HanziToPinyin.getInstance().get(headerName.substring(0, 1)).get(0).target.substring(0, 1)
 					.toUpperCase());
-			char header = EMUser.getHeader().toLowerCase().charAt(0);
+			char header = user.getHeader().toLowerCase().charAt(0);
 			if (header < 'a' || header > 'z') {
-				EMUser.setHeader("#");
+				user.setHeader("#");
 			}
 		}
-		return EMUser;
+		return user;
 	}
 
 	@Override

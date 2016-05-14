@@ -72,8 +72,8 @@ public class EMUserDao {
 	 * 保存一个联系人
 	 * @param EMUser
 	 */
-	public void saveContact(EMUser EMUser){
-	    DemoDBManager.getInstance().saveContact(EMUser);
+	public void saveContact(EMUser user){
+	    DemoDBManager.getInstance().saveContact(user);
 	}
 	
 	public void setDisabledGroups(List<String> groups){

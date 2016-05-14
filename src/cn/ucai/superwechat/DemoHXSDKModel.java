@@ -13,10 +13,10 @@
  */
 package cn.ucai.superwechat;
 
+import android.content.Context;
+
 import java.util.List;
 import java.util.Map;
-
-import android.content.Context;
 
 import cn.ucai.superwechat.applib.model.DefaultHXSDKModel;
 import cn.ucai.superwechat.db.DemoDBManager;
@@ -50,9 +50,9 @@ public class DemoHXSDKModel extends DefaultHXSDKModel{
         return dao.getContactList();
     }
     
-    public void saveContact(EMUser EMUser){
+    public void saveContact(EMUser user){
     	EMUserDao dao = new EMUserDao(context);
-    	dao.saveContact(EMUser);
+    	dao.saveContact(user);
     }
     
     public Map<String, RobotUser> getRobotList(){
