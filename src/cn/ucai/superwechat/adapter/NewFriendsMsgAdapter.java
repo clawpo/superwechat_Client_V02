@@ -38,7 +38,7 @@ import java.util.List;
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.activity.NewFriendsMsgActivity;
-import cn.ucai.superwechat.bean.UserBean;
+import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.db.InviteMessgeDao;
@@ -135,10 +135,10 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 			try {
 				String path = new ApiParams().with(I.User.USER_NAME, msg.getFrom()).getRequestUrl(I.REQUEST_FIND_USER);
                 Log.e("main","set avatar path="+path);
-				((NewFriendsMsgActivity)context).executeRequest(new GsonRequest<UserBean>(path, UserBean.class,
-						new Response.Listener<UserBean>() {
+				((NewFriendsMsgActivity)context).executeRequest(new GsonRequest<User>(path, User.class,
+						new Response.Listener<User>() {
 							@Override
-							public void onResponse(UserBean userBean) {
+							public void onResponse(User userBean) {
                                 Log.e("main","set avatar user="+userBean);
 								UserUtils.setUserBeanNickNF(userBean,holder.name);
                                 UserUtils.setUserBeanAvatar(userBean,holder.avator);
@@ -199,7 +199,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 						@Override
 						public void run() {
 							pd.dismiss();
-							Toast.makeText(context, str3 + e.getMessage(), 1).show();
+							Toast.makeText(context, str3 + e.getMessage(), Toast.LENGTH_LONG).show();
 						}
 					});
 
