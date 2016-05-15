@@ -67,6 +67,7 @@ import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
+import cn.ucai.superwechat.bean.Contact;
 import cn.ucai.superwechat.bean.ContactBean;
 import cn.ucai.superwechat.bean.GroupBean;
 import cn.ucai.superwechat.bean.UserBean;
@@ -313,7 +314,7 @@ public class MainActivity extends BaseActivity implements EMEventListener {
      * 设置hearder属性，方便通讯中对联系人按header分类显示，以及通过右侧ABCD...字母栏快速定位联系人
      * 
      * @param username
-     * @param EMUser
+     * @param user
      */
     private static void setUserHearder(String username, EMUser user) {
         String headerName = null;
@@ -531,7 +532,8 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 		public void onContactAdded(List<String> usernameList) {			
 			// 保存增加的联系人
 			Map<String, EMUser> localUsers = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList();
-			ArrayList<UserBean> contactList = SuperWeChatApplication.getInstance().getContactList();
+			ArrayList<Contact> contactList = SuperWeChatApplication.getInstance().getContactList();
+			HashMap<String, Contact> userList = SuperWeChatApplication.getInstance().getUserList();
 			Map<String, EMUser> toAddUsers = new HashMap<String, EMUser>();
 			ArrayList<String> toAddUserNames = new ArrayList<String>();
             boolean isAdd = false;
@@ -542,8 +544,7 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 					EMUserDao.saveContact(user);
                     isAdd = true;
 				}
-				UserBean u = new UserBean(username);
-				if (!contactList.contains(u)){
+				if (!userList.containsKey(username)){
 					toAddUserNames.add(username);
 				}
 				toAddUsers.put(username, user);
@@ -553,10 +554,10 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 				try {
                     if(isAdd) {
                         String path = new ApiParams()
-                                .with(I.User.USER_NAME, SuperWeChatApplication.getInstance().getUserName())
-                                .with(I.Contact.NAME, name)
+                                .with(I.Contact.USER_NAME, SuperWeChatApplication.getInstance().getUserName())
+                                .with(I.Contact.CU_NAME, name)
                                 .getRequestUrl(I.REQUEST_ADD_CONTACT);
-                        executeRequest(new GsonRequest<ContactBean>(path, ContactBean.class,
+                        executeRequest(new GsonRequest<Contact>(path, Contact.class,
                                 responseAddContactListener(name), errorListener()));
                     }
 				} catch (Exception e) {
@@ -570,44 +571,22 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 
 		}
 
-		private Response.Listener<ContactBean> responseAddContactListener(final String name) {
-			return new Response.Listener<ContactBean>() {
+		private Response.Listener<Contact> responseAddContactListener(final String name) {
+			return new Response.Listener<Contact>() {
 				@Override
-				public void onResponse(ContactBean contact) {
-					if(contact!=null && "ok".equals(contact.getResult())) {
+				public void onResponse(Contact contact) {
+					if(contact!=null && contact.isResult()) {
 						//获取好友集合
-						HashMap<Integer, ContactBean> contacts = SuperWeChatApplication.getInstance().getContacts();
-						//若添加成功，则将新好友保存在内存集合
-						contacts.put(contact.getMyuid(), contact);
-						//从服务端下载新好友
-						try {
-							String path = new ApiParams()
-									.with(I.User.USER_NAME, name)
-									.getRequestUrl(I.REQUEST_FIND_USER);
-							executeRequest(new GsonRequest<UserBean>(path, UserBean.class,
-									responseUserBeanListener(), errorListener()));
-						}catch (Exception e){
-							e.printStackTrace();
-						}
+                        HashMap<String, Contact> userList = SuperWeChatApplication.getInstance().getUserList();
+                        ArrayList<Contact> contactList = SuperWeChatApplication.getInstance().getContactList();
+                        //若添加成功，则将新好友保存在内存集合
+                        userList.put(contact.getMContactCname(),contact);
+                        contactList.add(contact);
+                        mContext.sendStickyBroadcast(new Intent("update_contact_list"));
+                        Utils.showToast(mContext,R.string.Add_buddy_success,Toast.LENGTH_SHORT);
 					} else {
-                        Utils.showToast(mContext,R.string.Add_buddy_failed,Toast.LENGTH_SHORT);
+                        Utils.showToast(mContext, Utils.getResourceString(mContext,contact.getMsg()),Toast.LENGTH_SHORT);
                     }
-				}
-			};
-		}
-
-		private Response.Listener<UserBean> responseUserBeanListener() {
-			return new Response.Listener<UserBean>() {
-				@Override
-				public void onResponse(UserBean userBean) {
-					if(userBean!=null) {
-						ArrayList<UserBean> contactList = SuperWeChatApplication.getInstance().getContactList();
-						HashMap<String, UserBean> userList = SuperWeChatApplication.getInstance().getUserList();
-						contactList.add(userBean);
-						userList.put(userBean.getUserName(),userBean);
-						mContext.sendStickyBroadcast(new Intent("update_contact_list"));
-						Utils.showToast(mContext,R.string.Add_buddy_success,Toast.LENGTH_SHORT);
-					}
 				}
 			};
 		}

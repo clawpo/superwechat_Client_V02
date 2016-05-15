@@ -38,7 +38,6 @@ import com.squareup.okhttp.Request;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -316,15 +315,14 @@ public class LoginActivity extends BaseActivity {
             EMGroupManager.getInstance().loadAllGroups();
             EMChatManager.getInstance().loadAllConversations();
             //下载用户头像
-            OkHttpUtils<Message> utils = new OkHttpUtils<Message>();
+            final OkHttpUtils<Message> utils = new OkHttpUtils<Message>();
             utils.url(SuperWeChatApplication.SERVER_ROOT)//设置服务端根地址
                     .addParam(I.KEY_REQUEST, I.REQUEST_DOWNLOAD_AVATAR)//添加上传的请求参数
                     .addParam(I.AVATAR_TYPE, currentUsername)//添加用户的账号
-                    .targetClass(Message.class)//设置服务端返回json数据的解析类型
             .doInBackground(new Callback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
-
+                    Toast.makeText(mContext,e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -333,13 +331,7 @@ public class LoginActivity extends BaseActivity {
                     File file = OnSetAvatarListener.getAvatarFile(mContext,avatarPath);
                     FileOutputStream out = null;
                     out = new FileOutputStream(file);
-                    int len;
-                    byte[] buffer = new byte[1024];
-                    final InputStream in = response.body().byteStream();
-                    while ((len = in.read(buffer)) != -1) {
-                        out.write(buffer, 0, len);
-                    }
-                    out.close();
+                    utils.downloadFile(response,file,false);
                 }
             }).execute(null);
             runOnUiThread(new Runnable() {
@@ -400,13 +392,13 @@ public class LoginActivity extends BaseActivity {
 		groupUser.setHeader("");
 		userlist.put(Constant.GROUP_USERNAME, groupUser);
 		
-		// 添加"Robot"
-        EMUser robotUser = new EMUser();
-		String strRobot = getResources().getString(R.string.robot_chat);
-		robotUser.setUsername(Constant.CHAT_ROBOT);
-		robotUser.setNick(strRobot);
-		robotUser.setHeader("");
-		userlist.put(Constant.CHAT_ROBOT, robotUser);
+//		// 添加"Robot"
+//        EMUser robotUser = new EMUser();
+//		String strRobot = getResources().getString(R.string.robot_chat);
+//		robotUser.setUsername(Constant.CHAT_ROBOT);
+//		robotUser.setNick(strRobot);
+//		robotUser.setHeader("");
+//		userlist.put(Constant.CHAT_ROBOT, robotUser);
 		
 		// 存入内存
 		((DemoHXSDKHelper)HXSDKHelper.getInstance()).setContactList(userlist);

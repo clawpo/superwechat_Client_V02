@@ -41,7 +41,7 @@ public class DownloadContactListTask extends BaseActivity {
                     .with(I.Contact.USER_NAME, userName)
                     .with(I.PAGE_ID, pageId + "")
                     .with(I.PAGE_SIZE, pageSize + "")
-                    .getRequestUrl(I.REQUEST_DOWNLOAD_CONTACT_LIST);
+                    .getRequestUrl(I.REQUEST_DOWNLOAD_CONTACT_ALL_LIST);
         } catch (Exception e) {
             e.printStackTrace();
         }

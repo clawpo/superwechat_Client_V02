@@ -153,6 +153,8 @@ public interface I {
     String REQUEST_DOWNLOAD_GROUP_AVATAR 			= 		"download_group_avatar";
     /** 客户端发送的下载联系人请求 */
     String REQUEST_DOWNLOAD_CONTACTS			 	= 		"download_contacts";
+    /** 客户端发送的下载联系人所有集合请求 */
+    String REQUEST_DOWNLOAD_CONTACT_ALL_LIST 		= 		"download_contact_all_list";
     /** 客户端发送的下载联系人集合请求 */
     String REQUEST_DOWNLOAD_CONTACT_LIST 			= 		"download_contact_list";
     /** 客户端发送的删除联系人请求 */
