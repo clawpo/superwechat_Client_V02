@@ -249,9 +249,9 @@ public class GroupsActivity extends BaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(groupAdapter.getCount()==3 && intent.getAction().equals("update_group")){
-                ArrayList<Group> groupList=SuperWeChatApplication.getInstance().getGroupList();
-                if(!groupList.containsAll(groupList)){
-                    groupAdapter.initList(groupList);
+                ArrayList<Group> groupList2=SuperWeChatApplication.getInstance().getGroupList();
+                if(!grouplist.containsAll(groupList2)){
+                    groupAdapter.initList(groupList2);
                 }
             }else if(intent.getAction().equals("update_group_name")) {
                 //获取广播中携带的新群名

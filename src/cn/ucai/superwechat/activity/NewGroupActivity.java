@@ -262,6 +262,7 @@ public class NewGroupActivity extends BaseActivity {
                 if(message.isResult()){
                     progressDialog.dismiss();
                     Utils.showToast(mContext,Utils.getResourceString(mContext,I.MSG_GROUP_CREATE_SCUUESS),Toast.LENGTH_LONG);
+                    SuperWeChatApplication.getInstance().getGroupList().add(group);
                     Intent intent = new Intent("update_group").putExtra("group",group);
                     setResult(RESULT_OK,intent);
                 } else {
