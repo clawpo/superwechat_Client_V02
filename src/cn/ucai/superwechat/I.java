@@ -186,6 +186,10 @@ public interface I {
     /** 客户端发送的更新群名称请求 */
     String REQUEST_UPDATE_GROUP_NAME 				= 		"update_group_name";
     /** 客户端发送的下载多个群成员请求 */
+    String REQUEST_DOWNLOAD_GROUP_MEMBERS_BY_HXID 	= 		"download_group_members_by_hxid";
+    /** 客户端发送的下载多个群成员请求 */
+    String REQUEST_DOWNLOAD_GROUP_MEMBERS_BY_HXID_LIMIT 	= 		"download_group_members_by_hxid_limit";
+    /** 客户端发送的下载多个群成员请求 */
     String REQUEST_DOWNLOAD_GROUP_MEMBERS 			= 		"download_group_members";
     /** 客户端发送的下载多个群成员请求 */
     String REQUEST_DOWNLOAD_GROUP_MEMBERS_BY_LIMIT 	= 		"download_group_members_by_limit";

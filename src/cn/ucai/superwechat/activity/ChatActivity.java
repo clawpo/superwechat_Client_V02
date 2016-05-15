@@ -101,8 +101,8 @@ import cn.ucai.superwechat.adapter.MessageAdapter;
 import cn.ucai.superwechat.adapter.VoicePlayClickListener;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import cn.ucai.superwechat.applib.model.GroupRemoveListener;
-import cn.ucai.superwechat.bean.GroupBean;
-import cn.ucai.superwechat.bean.UserBean;
+import cn.ucai.superwechat.bean.Group;
+import cn.ucai.superwechat.bean.Member;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.domain.RobotUser;
@@ -212,9 +212,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener, EMEve
 	public EMChatRoom room;
 	public boolean isRobot;
 
-    GroupBean mGroup;
-    ArrayList<UserBean> currentMembers;
-	
+    Group mGroup;
+    ArrayList<Member> currentMembers;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -521,16 +521,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener, EMEve
 	
 	protected void onGroupViewCreation(){
 
-		HashMap<String, ArrayList<UserBean>> groupMembers =
-				SuperWeChatApplication.getInstance().getGroupMembers();
-        ArrayList<UserBean> members = groupMembers.get(toChatUsername);
-        currentMembers = new ArrayList<UserBean>();
+		HashMap<String, ArrayList<Member>> groupMembers = SuperWeChatApplication.getInstance().getGroupMembers();
+		ArrayList<Member> members = groupMembers.get(toChatUsername);
+        currentMembers = new ArrayList<Member>();
         if(members==null){
             try {
                 String path = new ApiParams()
-                        .with(I.Group.GROUP_ID, toChatUsername)
-                        .getRequestUrl(I.REQUEST_DOWNLOAD_GROUP_MEMBERS);
-                executeRequest(new GsonRequest<UserBean[]>(path,UserBean[].class,
+                        .with(I.Group.HX_ID, toChatUsername)
+                        .getRequestUrl(I.REQUEST_DOWNLOAD_GROUP_MEMBERS_BY_HXID);
+                executeRequest(new GsonRequest<Member[]>(path,Member[].class,
                         responseDownloadGroupMembersListener(), errorListener()));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -540,9 +539,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener, EMEve
             if(adapter!=null)
                 adapter.notifyDataSetChanged();
         }
-        ArrayList<GroupBean> groupList = SuperWeChatApplication.getInstance().getGroupList();
-        for (GroupBean g:groupList){
-            if (g.getGroupId().equals(toChatUsername)){
+        ArrayList<Group> groupList = SuperWeChatApplication.getInstance().getGroupList();
+        for (Group g:groupList){
+            if (g.getMGroupHxid().equals(toChatUsername)){
                 mGroup = g;
             }
         }
@@ -560,14 +559,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener, EMEve
         EMGroupManager.getInstance().addGroupChangeListener(groupListener);
 	}
 
-    private Response.Listener<UserBean[]> responseDownloadGroupMembersListener() {
-        return new Response.Listener<UserBean[]>() {
+    private Response.Listener<Member[]> responseDownloadGroupMembersListener() {
+        return new Response.Listener<Member[]>() {
             @Override
-            public void onResponse(UserBean[] userBeen) {
+            public void onResponse(Member[] userBeen) {
                 if(userBeen!=null) {
-                    HashMap<String, ArrayList<UserBean>> groupMembers =
+                    HashMap<String, ArrayList<Member>> groupMembers =
                             SuperWeChatApplication.getInstance().getGroupMembers();
-                    ArrayList<UserBean> users = Utils.array2List(userBeen);
+                    ArrayList<Member> users = Utils.array2List(userBeen);
                     groupMembers.put(toChatUsername, users);
                     currentMembers.addAll(users);
                     if(adapter!=null)
