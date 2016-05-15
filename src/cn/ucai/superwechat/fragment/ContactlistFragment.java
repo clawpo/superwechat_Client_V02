@@ -65,8 +65,7 @@ import cn.ucai.superwechat.activity.MainActivity;
 import cn.ucai.superwechat.activity.NewFriendsMsgActivity;
 import cn.ucai.superwechat.adapter.ContactAdapter;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
-import cn.ucai.superwechat.bean.ContactBean;
-import cn.ucai.superwechat.bean.UserBean;
+import cn.ucai.superwechat.bean.Contact;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.db.EMUserDao;
@@ -95,10 +94,10 @@ public class ContactlistFragment extends Fragment {
 	HXContactInfoSyncListener contactInfoSyncListener;
 	View progressBar;
 	Handler handler = new Handler();
-    private UserBean toBeProcessUser;
+    private Contact toBeProcessUser;
     private String toBeProcessUsername;
 
-    private ArrayList<UserBean> mContactList = new ArrayList<UserBean>();
+    private ArrayList<Contact> mContactList = new ArrayList<Contact>();
     ContactListChangedReceiver mReceiver;
 
     MainActivity mContext;
@@ -287,7 +286,7 @@ public class ContactlistFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String username = adapter.getItem(position).getUserName();
+                String username = adapter.getItem(position).getMContactCname();
                 if (Constant.NEW_FRIENDS_USERNAME.equals(username)) {
                     // 进入申请与通知页面
                     EMUser user = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME);
@@ -298,7 +297,7 @@ public class ContactlistFragment extends Fragment {
                     startActivity(new Intent(getActivity(), GroupsActivity.class));
                 }else {
                     // demo中直接进入聊天页面，实际一般是进入用户详情页
-                    startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", adapter.getItem(position).getUserName()));
+                    startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", adapter.getItem(position).getMContactCname()));
                 }
             }
         });
@@ -309,7 +308,7 @@ public class ContactlistFragment extends Fragment {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		if (((AdapterContextMenuInfo) menuInfo).position > 1) {
 		    toBeProcessUser = adapter.getItem(((AdapterContextMenuInfo) menuInfo).position);
-		    toBeProcessUsername = toBeProcessUser.getUserName();
+		    toBeProcessUsername = toBeProcessUser.getMContactCname();
 			getActivity().getMenuInflater().inflate(R.menu.context_contact_list, menu);
 		}
 	}
@@ -322,7 +321,7 @@ public class ContactlistFragment extends Fragment {
                 deleteContact(toBeProcessUser);
                 // 删除相关的邀请消息
                 InviteMessgeDao dao = new InviteMessgeDao(getActivity());
-                dao.deleteMessage(toBeProcessUser.getUserName());
+                dao.deleteMessage(toBeProcessUser.getMContactCname());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -356,7 +355,7 @@ public class ContactlistFragment extends Fragment {
 	 * 
 	 * @param tobeDeleteUser
 	 */
-	public void deleteContact(final UserBean tobeDeleteUser) {
+	public void deleteContact(final Contact tobeDeleteUser) {
 		String st1 = getResources().getString(R.string.deleting);
 		final String st2 = getResources().getString(R.string.Delete_failed);
 		final ProgressDialog pd = new ProgressDialog(getActivity());
@@ -367,41 +366,32 @@ public class ContactlistFragment extends Fragment {
 			public void run() {
 				try {
                     //删除应用服务器的好友关系
-                    HashMap<Integer, ContactBean> contacts = SuperWeChatApplication.getInstance().getContacts();
-                    ArrayList<UserBean> contactList = SuperWeChatApplication.getInstance().getContactList();
-                    HashMap<String, UserBean> userList = SuperWeChatApplication.getInstance().getUserList();
-                    ArrayList<ContactBean> deleteContacts = new ArrayList<ContactBean>();
-                    ArrayList<UserBean> deleteContactList = new ArrayList<UserBean>();
-                    //删除内存中好友，删除的好友存放在deleteContactList和deleteContacts集合中
-                    for(UserBean contactUser : contactList){
-                        if(tobeDeleteUser.equals(contactUser)){
-                            ContactBean contact = contacts.remove(contactUser.getId());
-                            deleteContacts.add(contact);
-                            deleteContactList.add(contactUser);
-                            userList.remove(contactUser.getUserName());
-                        }
+					ArrayList<Contact> contactList = SuperWeChatApplication.getInstance().getContactList();
+					HashMap<String, Contact> userList = SuperWeChatApplication.getInstance().getUserList();
+					ArrayList<Contact> deleteContacts = new ArrayList<Contact>();
+					if(contactList.contains(tobeDeleteUser)){
+                        deleteContacts.add(tobeDeleteUser);
                     }
                     if(deleteContacts.size()>0){
-                        contactList.removeAll(deleteContactList);//删除内存中好友
                         // 删除应用服务器的联系人记录
                         try {
-                            for(ContactBean contact : deleteContacts) {
+                            for(Contact contact : deleteContacts) {
                                 String path = new ApiParams()
-                                        .with(I.Contact.MYUID, contact.getMyuid() + "")
-                                        .with(I.Contact.CUID, contact.getCuid() + "")
+                                        .with(I.Contact.USER_NAME, contact.getMContactUserName())
+                                        .with(I.Contact.CU_NAME, contact.getMContactCname())
 										.getRequestUrl(I.REQUEST_DELETE_CONTACT);
                                 mContext.executeRequest(new GsonRequest<Boolean>(path, Boolean.class,
-                                        responseDeleteContactListener(), mContext.errorListener()));
+                                        responseDeleteContactListener(tobeDeleteUser), mContext.errorListener()));
                             }
                         }catch (Exception e){
                             e.printStackTrace();
                         }
                     }
-					EMContactManager.getInstance().deleteContact(tobeDeleteUser.getUserName());
+					EMContactManager.getInstance().deleteContact(tobeDeleteUser.getMContactCname());
 					// 删除db和内存中此用户的数据
 					EMUserDao dao = new EMUserDao(getActivity());
-					dao.deleteContact(tobeDeleteUser.getUserName());
-					((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().remove(tobeDeleteUser.getUserName());
+					dao.deleteContact(tobeDeleteUser.getMContactCname());
+					((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().remove(tobeDeleteUser.getMContactCname());
 					getActivity().runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();
@@ -425,11 +415,15 @@ public class ContactlistFragment extends Fragment {
 
 	}
 
-    private Response.Listener<Boolean> responseDeleteContactListener() {
+    private Response.Listener<Boolean> responseDeleteContactListener(final Contact tobeDeleteUser) {
         return new Response.Listener<Boolean>() {
             @Override
             public void onResponse(Boolean isSuccess) {
                 if(isSuccess){
+                    //删除内存中好友，删除的好友存放在deleteContacts集合中
+                    SuperWeChatApplication.getInstance().getContactList().remove(tobeDeleteUser);
+                    SuperWeChatApplication.getInstance().getUserList().remove(tobeDeleteUser.getMContactCname());
+                    mContactList.remove(tobeDeleteUser);
                     Intent intent = new Intent("update_contacts").setAction("update_contact_list");
                     mContext.sendBroadcast(intent);
                 }
@@ -562,33 +556,33 @@ public class ContactlistFragment extends Fragment {
 //	}
 
     private void initContactList(){
-        ArrayList<UserBean> contactlist = SuperWeChatApplication.getInstance().getContactList();
-        mContactList.clear();
+		ArrayList<Contact> contactlist = SuperWeChatApplication.getInstance().getContactList();
+		mContactList.clear();
         mContactList.addAll(contactlist);
         // 添加"群聊"
-        UserBean groupUser = new UserBean();
+		Contact groupUser = new Contact();
         String strGroup = getActivity().getString(R.string.group_chat);
-        groupUser.setUserName(Constant.GROUP_USERNAME);
-        groupUser.setNick(strGroup);
+        groupUser.setMContactCname(Constant.GROUP_USERNAME);
+        groupUser.setMUserNick(strGroup);
         groupUser.setHeader("");
         if(mContactList.indexOf(groupUser)==-1){
             mContactList.add(0, groupUser);
         }
         // 添加user"申请与通知"
-        UserBean newFriends = new UserBean();
-        newFriends.setUserName(Constant.NEW_FRIENDS_USERNAME);
+		Contact newFriends = new Contact();
+        newFriends.setMContactCname(Constant.NEW_FRIENDS_USERNAME);
         String strChat = getActivity().getString(R.string.Application_and_notify);
-        newFriends.setNick(strChat);
+        newFriends.setMUserNick(strChat);
 		newFriends.setHeader("");
         if(mContactList.indexOf(newFriends)==-1){
             mContactList.add(0, newFriends);
         }
-        for(UserBean user : mContactList){
-            UserUtils.setUserHearder(user.getUserName(),user);
+        for(Contact user : mContactList){
+            UserUtils.setUserHearder(user.getMContactCname(),user);
         }
-        Collections.sort(mContactList, new Comparator<UserBean>() {
+        Collections.sort(mContactList, new Comparator<Contact>() {
             @Override
-            public int compare(UserBean lhs, UserBean rhs) {
+            public int compare(Contact lhs, Contact rhs) {
                 return lhs.getHeader().compareTo(rhs.getHeader());
             }
         });

@@ -17,7 +17,9 @@ import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
+import cn.ucai.superwechat.bean.Contact;
 import cn.ucai.superwechat.bean.GroupBean;
+import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.bean.UserBean;
 import cn.ucai.superwechat.data.RequestManager;
 import cn.ucai.superwechat.domain.EMUser;
@@ -242,12 +244,14 @@ public class UserUtils {
      * @param username
      * @param user
      */
-    public static void setUserHearder(String username, UserBean user) {
+    public static void setUserHearder(String username, User user) {
         String headerName = null;
-        if (!TextUtils.isEmpty(user.getNick())) {
-            headerName = user.getNick();
+        if (!TextUtils.isEmpty(user.getMUserNick())) {
+            headerName = user.getMUserNick();
+        } else if(!TextUtils.isEmpty(user.getMUserName())) {
+            headerName = user.getMUserName();
         } else {
-            headerName = user.getUserName();
+            headerName = ((Contact)user).getMContactCname();
         }
         if (username.equals(Constant.NEW_FRIENDS_USERNAME)
                 || username.equals(Constant.GROUP_USERNAME)) {
