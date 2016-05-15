@@ -17,6 +17,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -31,17 +32,24 @@ import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.exceptions.EaseMobException;
 
+import java.io.File;
+
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
-import cn.ucai.superwechat.bean.GroupBean;
+import cn.ucai.superwechat.bean.Contact;
+import cn.ucai.superwechat.bean.Group;
+import cn.ucai.superwechat.bean.Message;
+import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
+import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.listener.OnSetAvatarListener;
-import cn.ucai.superwechat.utils.NetUtil;
+import cn.ucai.superwechat.utils.ImageUtils;
 import cn.ucai.superwechat.utils.Utils;
 
 public class NewGroupActivity extends BaseActivity {
+    public static final String TAG = NewGroupActivity.class.getName();
     private EditText groupNameEditText;
     private ProgressDialog progressDialog;
     private EditText introductionEditText;
@@ -52,6 +60,7 @@ public class NewGroupActivity extends BaseActivity {
     NewGroupActivity mContext;
     OnSetAvatarListener mOnSetAvatarListener;
     ImageView mivAvatar;
+    String avatarName;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -76,21 +85,16 @@ public class NewGroupActivity extends BaseActivity {
         findViewById(R.id.layout_group_icon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String groupName = getGroupName();
-                if(groupName!=null) {
-                    mOnSetAvatarListener = new OnSetAvatarListener(mContext, R.id.layout_new_group, groupName, "group_icon");
+                avatarName = getGroupAvatarName();
+                if(avatarName!=null) {
+                    mOnSetAvatarListener = new OnSetAvatarListener(mContext, R.id.layout_new_group, avatarName, I.AVATAR_TYPE_GROUP_PATH);
                 }
             }
         });
     }
 
-    private String getGroupName() {
-        String username = groupNameEditText.getText().toString();
-        if (username.isEmpty()) {
-            Utils.showToast(mContext, R.string.Group_name_cannot_be_empty, Toast.LENGTH_SHORT);
-            return null;
-        }
-        return username;
+    private String getGroupAvatarName() {
+        return System.currentTimeMillis()+"";
     }
 
     private void setOnCheckchangedListener() {
@@ -147,94 +151,124 @@ public class NewGroupActivity extends BaseActivity {
         }
     }
 
-    private void createNewGroup(Intent data) {
+    private void createNewGroup(final Intent data) {
         setProgressDialog();
-        String groupName = groupNameEditText.getText().toString().trim();
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // 调用sdk创建群组方法
+                final String st2 = getResources().getString(R.string.Failed_to_create_groups);
+                String groupName = groupNameEditText.getText().toString().trim();
+                String desc = introductionEditText.getText().toString();
+                Contact[] members = (Contact[]) data.getSerializableExtra("newmembers");
+                String[] memberNames = new String[members.length];
+                for (int i=0;i<members.length;i++) {
+                    memberNames[i] = members[i].getMContactCname();
+                }
+                EMGroup emGroup;
+                try {
+                    if (checkBox.isChecked()) {
+                        //创建公开群，此种方式创建的群，可以自由加入
+                        //创建公开群，此种方式创建的群，用户需要申请，等群主同意后才能加入此群
+                        emGroup = EMGroupManager.getInstance().createPublicGroup(groupName, desc, memberNames, true, 200);
+                    } else {
+                        //创建不公开群
+                        emGroup = EMGroupManager.getInstance().createPrivateGroup(groupName, desc, memberNames, memberCheckbox.isChecked(), 200);
+                    }
+                    String userName = SuperWeChatApplication.getInstance().getUserName();
+                    StringBuffer sbMemberBuffer = new StringBuffer();
+                    sbMemberBuffer.append(userName);
+                    String groupId = emGroup.getGroupId();
+                    boolean isPublic = checkBox.isChecked();
+                    boolean isExam = !memberCheckbox.isChecked();
+                    createGroupAppServer(groupId,groupName,desc,isPublic,isExam,members);
+                } catch (final EaseMobException e) {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            progressDialog.dismiss();
+                            Toast.makeText(NewGroupActivity.this, st2 + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private void createGroupAppServer(final String hxid, String groupName, String desc, boolean isPublic, boolean isExam, final Contact[] members){
+        //注册环信的服务器 registerEMServer
+        //先注册本地的服务器并上传头像 REQUEST_CREATE_GROUP -->okhttp
+        //添加群成员
+
+        File file = new File(ImageUtils.getAvatarPath(activity, I.AVATAR_TYPE_GROUP_PATH),
+                avatarName + I.AVATAR_SUFFIX_JPG);
+        User user = SuperWeChatApplication.getInstance().getUser();
+        OkHttpUtils<Group> utils = new OkHttpUtils<Group>();
+        utils.url(SuperWeChatApplication.SERVER_ROOT)//设置服务端根地址
+                .addParam(I.KEY_REQUEST, I.REQUEST_CREATE_GROUP)//添加上传的请求参数
+                .addParam(I.Group.HX_ID,hxid)
+                .addParam(I.Group.NAME,groupName)
+                .addParam(I.Group.DESCRIPTION,desc)
+                .addParam(I.Group.OWNER,user.getMUserName())
+                .addParam(I.Group.IS_PUBLIC,isPublic+"")
+                .addParam(I.Group.ALLOW_INVITES,isExam+"")
+                .addParam(I.User.USER_ID,user.getMUserId()+"")
+                .targetClass(Group.class)//设置服务端返回json数据的解析类型
+                .addFile(file)//添加上传的文件
+                .execute(new OkHttpUtils.OnCompleteListener<Group>() {//执行请求，并处理返回结果
+                    @Override
+                    public void onSuccess(Group group) {
+                        if(group.isResult()){
+                            addGroupMembers(group,members);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        progressDialog.dismiss();
+                        Utils.showToast(mContext,R.string.Failed_to_create_groups,Toast.LENGTH_SHORT);
+                        Log.e(TAG, error);
+                    }
+                });
+    }
+
+    private void addGroupMembers(Group group,Contact[] members) {
         try {
+            String userIds=null;
+            String userNames=null;
+            for(int i=0;i<members.length;i++){
+                userIds+=members[i].getMContactCid()+",";
+                userNames+=members[i].getMContactCname()+",";
+            }
             String path = new ApiParams()
-                    .with(I.Group.NAME, groupName)
-                    .getRequestUrl(I.REQUEST_FIND_GROUP);
-            executeRequest(new GsonRequest<GroupBean>(path, GroupBean.class,
-                    responseCheckGroupNameListener(data.getStringArrayExtra("newmembers")),
-                    errorListener()));
+                    .with(I.Member.GROUP_HX_ID,group.getMGroupHxid())
+                    .with(I.Member.USER_ID,userIds)
+                    .with(I.Member.USER_NAME,userNames)
+                    .getRequestUrl(I.REQUEST_ADD_GROUP_MEMBERS);
+            Log.e(TAG,"path = "+ path);
+            executeRequest(new GsonRequest<Message>(path, Message.class,
+                    responseListener(group), errorListener()));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private Response.Listener<GroupBean> responseCheckGroupNameListener(final String[] members) {
-        return new Response.Listener<GroupBean>() {
+    private Response.Listener<Message> responseListener(final Group group) {
+        return new Response.Listener<Message>() {
             @Override
-            public void onResponse(GroupBean group) {
-                if (group != null) {
+            public void onResponse(Message message) {
+                if(message.isResult()){
                     progressDialog.dismiss();
-                    groupNameEditText.requestFocus();
-                    groupNameEditText.setError(getResources().getString(R.string.Group_name_existed));
+                    Utils.showToast(mContext,Utils.getResourceString(mContext,I.MSG_GROUP_CREATE_SCUUESS),Toast.LENGTH_LONG);
+                    Intent intent = new Intent("update_group").putExtra("group",group);
+                    setResult(RESULT_OK,intent);
                 } else {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // 调用sdk创建群组方法
-                            final String st2 = getResources().getString(R.string.Failed_to_create_groups);
-                            String groupName = groupNameEditText.getText().toString().trim();
-                            String desc = introductionEditText.getText().toString();
-                            EMGroup emGroup;
-                            try {
-                                if (checkBox.isChecked()) {
-                                    //创建公开群，此种方式创建的群，可以自由加入
-                                    //创建公开群，此种方式创建的群，用户需要申请，等群主同意后才能加入此群
-                                    emGroup = EMGroupManager.getInstance().createPublicGroup(groupName, desc, members, true, 200);
-                                } else {
-                                    //创建不公开群
-                                    emGroup = EMGroupManager.getInstance().createPrivateGroup(groupName, desc, members, memberCheckbox.isChecked(), 200);
-                                }
-                                String userName = SuperWeChatApplication.getInstance().getUserName();
-                                StringBuffer sbMemberBuffer = new StringBuffer();
-                                for (String member : members) {
-                                    sbMemberBuffer.append(member).append(",");
-                                }
-                                sbMemberBuffer.append(userName);
-                                String groupId = emGroup.getGroupId();
-                                boolean isPublic = checkBox.isChecked();
-                                boolean isExam = !memberCheckbox.isChecked();
-                                GroupBean toCreateGroup = new GroupBean(groupId, groupName, desc, userName, isPublic, isExam, sbMemberBuffer.toString());
-
-                                boolean isSuccess = NetUtil.createGroup(toCreateGroup);
-                                if (isSuccess){
-                                    try {
-                                        isSuccess=NetUtil.uploadAvatar(mContext, "group_icon", groupName);
-                                        if(isSuccess) {
-                                            toCreateGroup.setAvatar("group_icon/" + groupName + ".jpg");
-                                            Intent intent = new Intent("update_group").putExtra("group",toCreateGroup);
-                                            setResult(RESULT_OK,intent);
-                                        }else{
-                                            progressDialog.dismiss();
-                                            Utils.showToast(mContext,R.string.upload_avatar_failed,Toast.LENGTH_SHORT);
-                                        }
-                                        progressDialog.dismiss();
-                                        finish();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }else{
-                                    progressDialog.dismiss();
-                                    Utils.showToast(mContext,R.string.Failed_to_create_groups,Toast.LENGTH_SHORT);
-                                }
-                            } catch (final EaseMobException e) {
-                                runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        progressDialog.dismiss();
-                                        Toast.makeText(NewGroupActivity.this, st2 + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                            } catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }
-                    }).start();
-
+                    progressDialog.dismiss();
+                    Utils.showToast(mContext,R.string.Failed_to_create_groups,Toast.LENGTH_SHORT);
                 }
+                finish();
             }
         };
     }
