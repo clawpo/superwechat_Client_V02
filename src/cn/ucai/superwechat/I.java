@@ -167,6 +167,8 @@ public interface I {
     String REQUEST_FIND_USERS 						= 		"find_users";
     /** 客户端发送的根据用户昵称模糊查找用户请求 */
     String REQUEST_FIND_USERS_BY_NICK 				= 		"find_users_by_nick";
+    /** 客户端发送的根据用户昵称模糊查找用户请求 */
+    String REQUEST_FIND_USERS_FOR_SEARCH			= 		"find_users_for_search";
     /** 客户端发送的下载联系人请求 */
     String REQUEST_DOWNLOAD_CONTACT 				= 		"download_contacts";
     /** 客户端发送的上传位置请求 */

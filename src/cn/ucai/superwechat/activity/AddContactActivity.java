@@ -30,14 +30,15 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.NetworkImageView;
 import com.easemob.chat.EMContactManager;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import cn.ucai.superwechat.DemoHXSDKHelper;
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
-import cn.ucai.superwechat.bean.UserBean;
+import cn.ucai.superwechat.bean.Contact;
+import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.utils.UserUtils;
@@ -112,7 +113,7 @@ public class AddContactActivity extends BaseActivity{
                     String path = new ApiParams()
                             .with(I.User.USER_NAME, name)
                             .getRequestUrl(I.REQUEST_FIND_USER);
-                    executeRequest(new GsonRequest<UserBean>(path,UserBean.class,
+                    executeRequest(new GsonRequest<User>(path,User.class,
                     responeListener(),errorListener()));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -123,23 +124,23 @@ public class AddContactActivity extends BaseActivity{
 
 	}
 
-    private Response.Listener<UserBean> responeListener() {
-        return new Response.Listener<UserBean>() {
+    private Response.Listener<User> responeListener() {
+        return new Response.Listener<User>() {
             @Override
-            public void onResponse(UserBean userBean) {
-                if(userBean !=null){
+            public void onResponse(User user) {
+                if(user !=null){
                     mtvNothing.setVisibility(View.GONE);
-                    ArrayList<UserBean> users = SuperWeChatApplication.getInstance().getContactList();
-                    if(users.contains(userBean)){
+                    HashMap<String, Contact> userList = SuperWeChatApplication.getInstance().getUserList();
+                    if(userList.containsKey(user.getMUserName())){
                         Intent intent = new Intent();
                         intent.setClass(mContext, UserProfileActivity.class);
-                        intent.putExtra("username", userBean.getUserName());
+                        intent.putExtra("username", user.getMUserName());
                         mContext.startActivity(intent);
                     }else{
                         //服务器存在此用户，显示此用户和添加按钮
                         searchedUserLayout.setVisibility(View.VISIBLE);
-                        UserUtils.setUserBeanAvatar(userBean,avatar);
-                        UserUtils.setUserBeanNickNF(userBean,nameText);
+                        UserUtils.setUserBeanAvatar(user, avatar);
+                        UserUtils.setUserBeanNickNF(user, nameText);
                     }
                 }else{
                     mtvNothing.setVisibility(View.VISIBLE);
