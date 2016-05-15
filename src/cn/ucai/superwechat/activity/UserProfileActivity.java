@@ -34,7 +34,7 @@ import cn.ucai.superwechat.DemoHXSDKHelper;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
-import cn.ucai.superwechat.bean.UserBean;
+import cn.ucai.superwechat.bean.Contact;
 import cn.ucai.superwechat.domain.EMUser;
 import cn.ucai.superwechat.utils.UserUtils;
 import cn.ucai.superwechat.utils.Utils;
@@ -135,9 +135,8 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
         if (username == null || username.equals(currentUserName)) {
             btnAddFirend.setVisibility(View.INVISIBLE);
         }else{
-            HashMap<String, UserBean> userList =
-                    SuperWeChatApplication.getInstance().getUserList();
-            if(userList.containsKey(username)){
+			HashMap<String, Contact> userList = SuperWeChatApplication.getInstance().getUserList();
+			if(userList.containsKey(username)){
                 btnAddFirend.setText(R.string.send_message);
                 action = UserAction.SEND_MESSAGE;
             }else{
