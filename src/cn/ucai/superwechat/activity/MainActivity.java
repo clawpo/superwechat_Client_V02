@@ -68,9 +68,9 @@ import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import cn.ucai.superwechat.bean.Contact;
-import cn.ucai.superwechat.bean.ContactBean;
-import cn.ucai.superwechat.bean.GroupBean;
-import cn.ucai.superwechat.bean.UserBean;
+import cn.ucai.superwechat.bean.Group;
+import cn.ucai.superwechat.bean.Member;
+import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.db.EMUserDao;
@@ -595,38 +595,29 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 		public void onContactDeleted(final List<String> usernameList) {
 			// 被删除
 			Map<String, EMUser> localUsers = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList();
-            HashMap<String, UserBean> userList = SuperWeChatApplication.getInstance().getUserList();
-            ArrayList<UserBean> contactList = SuperWeChatApplication.getInstance().getContactList();
-            HashMap<Integer, ContactBean> contacts = SuperWeChatApplication.getInstance().getContacts();
+            HashMap<String, Contact> userList = SuperWeChatApplication.getInstance().getUserList();
+            ArrayList<String> deleteContacts = new ArrayList<String>();
 
             for (String username : usernameList) {
 				localUsers.remove(username);
-                userList.remove(username);
 				EMUserDao.deleteContact(username);
 				inviteMessgeDao.deleteMessage(username);
-			}
-            ArrayList<ContactBean> deleteContacts = new ArrayList<ContactBean>();
-            ArrayList<UserBean> deleteContactList = new ArrayList<UserBean>();
-            //删除内存中好友，删除的好友存放在deleteContactList和deleteContacts集合中
-            for(UserBean contactUser : contactList){
-                if(usernameList.contains(contactUser.getUserName())){
-                    ContactBean contact = contacts.remove(contactUser.getId());
-                    deleteContacts.add(contact);
-                    deleteContactList.add(contactUser);
+                //删除内存中好友，删除的好友存放在deleteContacts集合中
+                if(userList.containsKey(username)){
+                    deleteContacts.add(username);
                 }
-            }
+			}
             if(deleteContacts.size()>0){
-                contactList.removeAll(deleteContactList);//删除内存中好友
                 // 删除应用服务器的联系人记录
                 try {
-                    for(ContactBean contact : deleteContacts) {
+                    for(String username : deleteContacts) {
                         String path = new ApiParams()
-                                .with(I.Contact.MYUID, contact.getMyuid() + "")
-                                .with(I.Contact.CUID, contact.getCuid() + "")
+                                .with(I.Contact.USER_NAME, userList.get(username).getMContactUserName())
+                                .with(I.Contact.CU_NAME, userList.get(username).getMContactCname())
                                 .getRequestUrl(I.REQUEST_DELETE_CONTACT);
                         Log.e(TAG,"delete contacts,path="+path);
                         executeRequest(new GsonRequest<Boolean>(path, Boolean.class,
-                                responseDeleteContactListener(), errorListener()));
+                                responseDeleteContactListener(username), errorListener()));
                     }
                 }catch (Exception e){
                     e.printStackTrace();
@@ -651,11 +642,16 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 
 		}
 
-        private Response.Listener<Boolean> responseDeleteContactListener() {
+        private Response.Listener<Boolean> responseDeleteContactListener(final String username) {
             return new Response.Listener<Boolean>() {
                 @Override
                 public void onResponse(Boolean isSuccess) {
                     if(isSuccess){
+                        HashMap<String, Contact> userList = SuperWeChatApplication.getInstance().getUserList();
+                        ArrayList<Contact> contactList = SuperWeChatApplication.getInstance().getContactList();
+                        Contact c = userList.get(username);
+                        userList.remove(username);
+                        contactList.remove(c);
                         Intent intent = new Intent("update_contacts").setAction("update_contact_list");
                         mContext.sendBroadcast(intent);
                     }
@@ -896,13 +892,15 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 
 		@Override
 		public void onApplicationAccept(String groupId, String groupName, String accepter) {
-            String username = SuperWeChatApplication.getInstance().getUserName();
+            User user = SuperWeChatApplication.getInstance().getUser();
 
             try {
-                String path = new ApiParams().with(I.Group.GROUP_NAME, groupName)
-                        .with(I.Group.MEMBERS, username)
+                String path = new ApiParams()
+                        .with(I.Member.GROUP_HX_ID,groupId)
+                        .with(I.Member.USER_ID,user.getMUserId()+"")
+                        .with(I.Member.USER_NAME,user.getMUserName())
                         .getRequestUrl(I.REQUEST_ADD_GROUP_MEMBER);
-                executeRequest(new GsonRequest<GroupBean>(path,GroupBean.class,
+                executeRequest(new GsonRequest<Group>(path,Group.class,
                         responseAddGroupMemberListener(),errorListener()));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -934,49 +932,41 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 			});
 		}
 
-        private Response.Listener<GroupBean> responseAddGroupMemberListener() {
-            return new Response.Listener<GroupBean>() {
+        private Response.Listener<Group> responseAddGroupMemberListener() {
+            return new Response.Listener<Group>() {
                 @Override
-                public void onResponse(GroupBean groupBean) {
+                public void onResponse(Group groupBean) {
                     if(groupBean!=null){
-                        ArrayList<GroupBean> groupList = SuperWeChatApplication.getInstance().getGroupList();
+                        ArrayList<Group> groupList = SuperWeChatApplication.getInstance().getGroupList();
                         groupList.add(groupBean);
-                        HashMap<String, ArrayList<UserBean>> groupMembers =
-                                SuperWeChatApplication.getInstance().getGroupMembers();
-                        ArrayList<UserBean> members = groupMembers.get(groupBean.getGroupId());
-                        if(members==null){
-                            try {
-                                String path = new ApiParams()
-                                        .with(I.Group.GROUP_ID, groupBean.getGroupId())
-                                        .getRequestUrl(I.REQUEST_DOWNLOAD_GROUP_MEMBERS);
-                                executeRequest(new GsonRequest<UserBean[]>(path,UserBean[].class,
-                                        responseDownloadGroupMembersListener(groupBean.getGroupId()), errorListener()));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }else{
-                            members.add(SuperWeChatApplication.getInstance().getUser());
+                        try {
+                            String path = new ApiParams()
+                                    .with(I.Member.GROUP_ID, groupBean.getMGroupId()+"")
+                                    .getRequestUrl(I.REQUEST_DOWNLOAD_GROUP_MEMBERS);
+                            executeRequest(new GsonRequest<Member[]>(path,Member[].class,
+                                    responseDownloadGroupMembersListener(groupBean.getMGroupHxid()), errorListener()));
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 }
             };
         }
 
-        private Response.Listener<UserBean[]> responseDownloadGroupMembersListener(final String groupId) {
-            return new Response.Listener<UserBean[]>() {
+        private Response.Listener<Member[]> responseDownloadGroupMembersListener(final String hxid) {
+            return new Response.Listener<Member[]>() {
                 @Override
-                public void onResponse(UserBean[] userBeen) {
-                    if(userBeen!=null){
-                        HashMap<String, ArrayList<UserBean>> groupMembers =
+                public void onResponse(Member[] members) {
+                    if(members!=null){
+                        HashMap<String, ArrayList<Member>> groupMembers =
                                 SuperWeChatApplication.getInstance().getGroupMembers();
-                        ArrayList<UserBean> list = Utils.array2List(userBeen);
-                        ArrayList<UserBean> members = groupMembers.get(groupId);
-                        if(members==null){
-                            members = new ArrayList<UserBean>();
-                            groupMembers.put(groupId,members);
+                        ArrayList<Member> list = Utils.array2List(members);
+                        ArrayList<Member> membersList = groupMembers.get(hxid);
+                        if(membersList==null){
+                            membersList = new ArrayList<Member>();
+                            groupMembers.put(hxid,membersList);
                         }
-                        members.addAll(list);
-                        members.add(SuperWeChatApplication.getInstance().getUser());
+                        membersList.addAll(list);
                     }
                 }
             };
