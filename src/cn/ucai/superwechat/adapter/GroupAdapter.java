@@ -31,7 +31,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import java.util.ArrayList;
 
 import cn.ucai.superwechat.R;
-import cn.ucai.superwechat.bean.GroupBean;
+import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.utils.UserUtils;
 
 public class GroupAdapter extends BaseAdapter {
@@ -39,10 +39,10 @@ public class GroupAdapter extends BaseAdapter {
 	private LayoutInflater inflater;
 	private String newGroup;
 	private String addPublicGroup;
-    ArrayList<GroupBean> mGroupList;
+    ArrayList<Group> mGroupList;
     Context mContext;
 
-	public GroupAdapter(Context context, int res, ArrayList<GroupBean> groups) {
+	public GroupAdapter(Context context, int res, ArrayList<Group> groups) {
         this.mContext = context;
 		this.inflater = LayoutInflater.from(context);
 		newGroup = context.getResources().getString(R.string.The_new_group_chat);
@@ -116,9 +116,9 @@ public class GroupAdapter extends BaseAdapter {
 			if (convertView == null) {
 				convertView = inflater.inflate(R.layout.row_group, null);
 			}
-			String groupName = getItem(position).getName();
-			((TextView) convertView.findViewById(R.id.name)).setText(groupName);
-			UserUtils.setGroupAvatar(groupName,((NetworkImageView) convertView.findViewById(R.id.avatar)));
+			Group group = getItem(position);
+			((TextView) convertView.findViewById(R.id.name)).setText(group.getMGroupName());
+			UserUtils.setGroupAvatar(group.getMGroupHxid(),((NetworkImageView) convertView.findViewById(R.id.avatar)));
 		}
 
 		return convertView;
@@ -130,7 +130,7 @@ public class GroupAdapter extends BaseAdapter {
 	}
 
     @Override
-    public GroupBean getItem(int position) {
+    public Group getItem(int position) {
         if(position>=3){
             return mGroupList.get(position-3);
         }
@@ -141,23 +141,23 @@ public class GroupAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return 0;
     }
-    public ArrayList<GroupBean> getGroups(){
+    public ArrayList<Group> getGroups(){
         return mGroupList;
     }
 
-    public void initList(ArrayList<GroupBean> list){
+    public void initList(ArrayList<Group> list){
         mGroupList.addAll(list);
         notifyDataSetChanged();
     }
 
-    public void addItem(GroupBean group) {
+    public void addItem(Group group) {
         if(group!=null){
             mGroupList.add(group);
             notifyDataSetChanged();
         }
     }
 
-    public void remove(GroupBean group) {
+    public void remove(Group group) {
         mGroupList.remove(group);
         boolean isRemove = mGroupList.remove(group);
         if(isRemove){

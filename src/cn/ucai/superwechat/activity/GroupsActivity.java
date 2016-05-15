@@ -39,7 +39,7 @@ import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.adapter.GroupAdapter;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
-import cn.ucai.superwechat.bean.GroupBean;
+import cn.ucai.superwechat.bean.Group;
 
 public class GroupsActivity extends BaseActivity {
 	public static final String TAG = "GroupsActivity";
@@ -47,7 +47,7 @@ public class GroupsActivity extends BaseActivity {
     static final int REQUEST_NEW_PUBLIC_GROUP=1;
     static final int REQUEST_ENTER_CHATACTIVITY=2;
 	private ListView groupListView;
-	protected ArrayList<GroupBean> grouplist;
+	protected ArrayList<Group> grouplist;
 	private GroupAdapter groupAdapter;
 	private InputMethodManager inputMethodManager;
 	public static GroupsActivity instance;
@@ -146,7 +146,7 @@ public class GroupsActivity extends BaseActivity {
                     Intent intent = new Intent(GroupsActivity.this, ChatActivity.class);
                     // it is group chat
                     intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
-                    intent.putExtra("groupId", groupAdapter.getItem(position).getGroupId());
+                    intent.putExtra("groupId", groupAdapter.getItem(position).getMGroupHxid());
                     startActivityForResult(intent, REQUEST_ENTER_CHATACTIVITY);
                 }
             }
@@ -194,7 +194,7 @@ public class GroupsActivity extends BaseActivity {
         }
         switch (requestCode) {
             case REQUEST_NEW_GROUP:
-                GroupBean group=(GroupBean) data.getSerializableExtra("group");
+                Group group=(Group) data.getSerializableExtra("group");
                 groupAdapter.addItem(group);//将新建的群显示在列表中
                 break;
         }
@@ -249,18 +249,17 @@ public class GroupsActivity extends BaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(groupAdapter.getCount()==3 && intent.getAction().equals("update_group")){
-                ArrayList<GroupBean> groupList=SuperWeChatApplication.getInstance().getGroupList();
+                ArrayList<Group> groupList=SuperWeChatApplication.getInstance().getGroupList();
                 if(!groupList.containsAll(groupList)){
                     groupAdapter.initList(groupList);
                 }
             }else if(intent.getAction().equals("update_group_name")) {
                 //获取广播中携带的新群名
                 String newGroupName=intent.getStringExtra("groupName");
-                ArrayList<GroupBean> groupList = SuperWeChatApplication.getInstance().getGroupList();
 
                 //刷新群列表显示
-                GroupBean group=groupAdapter.getItem(mPosition);
-                group.setName(newGroupName);
+                Group group=groupAdapter.getItem(mPosition);
+                group.setMGroupName(newGroupName);
                 groupAdapter.notifyDataSetChanged();
                 //修改全局的群集合
                 SuperWeChatApplication.getInstance().setGroupList(groupAdapter.getGroups());
@@ -268,7 +267,7 @@ public class GroupsActivity extends BaseActivity {
         }
     }
     /**
-     * 注册DownloadContactsTask下载群成功后发送的广播
+     * 注册DownloadGroupTask下载群成功后发送的广播
      */
     private void registerGroupChangedReceiver() {
         mGroupListChangedReceiver=new GroupChangedReceiver();
@@ -280,7 +279,7 @@ public class GroupsActivity extends BaseActivity {
     class DeleteGroupMemberReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
-            GroupBean group=(GroupBean) intent.getSerializableExtra("group");
+            Group group=(Group) intent.getSerializableExtra("group");
             groupAdapter.remove(group);
         }
     }
