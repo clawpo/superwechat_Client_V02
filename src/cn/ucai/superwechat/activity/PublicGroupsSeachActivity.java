@@ -15,7 +15,7 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
-import cn.ucai.superwechat.bean.GroupBean;
+import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.utils.UserUtils;
@@ -25,7 +25,7 @@ public class PublicGroupsSeachActivity extends BaseActivity{
     private EditText idET;
     private TextView nameText;
     private NetworkImageView nivAvatar;
-    public static GroupBean searchedGroup;
+    public static Group searchedGroup;
     ProgressDialog pd;
 
     @Override
@@ -59,23 +59,23 @@ public class PublicGroupsSeachActivity extends BaseActivity{
             String path = new ApiParams()
                     .with(I.Group.NAME, groupName)
                     .getRequestUrl(I.REQUEST_FIND_GROUP);
-            executeRequest(new GsonRequest<GroupBean>(path,GroupBean.class,
+            executeRequest(new GsonRequest<Group[]>(path,Group[].class,
                     responseFindGroupListener(),errorListener()));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private Response.Listener<GroupBean> responseFindGroupListener() {
-        return new Response.Listener<GroupBean>() {
+    private Response.Listener<Group[]> responseFindGroupListener() {
+        return new Response.Listener<Group[]>() {
             @Override
-            public void onResponse(GroupBean groupBean) {
+            public void onResponse(Group[] groupBean) {
             if(groupBean!=null){
-                searchedGroup = groupBean;
+                searchedGroup = groupBean[0];
                 pd.dismiss();
                 containerLayout.setVisibility(View.VISIBLE);
-                UserUtils.setGroupBeanAvatar(groupBean,nivAvatar);
-                nameText.setText(searchedGroup.getName());
+                UserUtils.setGroupBeanAvatar(searchedGroup,nivAvatar);
+                nameText.setText(searchedGroup.getMGroupName());
             }else{
                 pd.dismiss();
                 searchedGroup = null;

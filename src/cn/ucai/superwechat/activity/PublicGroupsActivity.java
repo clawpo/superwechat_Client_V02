@@ -40,7 +40,7 @@ import java.util.ArrayList;
 
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
-import cn.ucai.superwechat.bean.GroupBean;
+import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.task.DownloadPublicGroupTask;
 import cn.ucai.superwechat.utils.UserUtils;
 
@@ -51,7 +51,7 @@ public class PublicGroupsActivity extends BaseActivity {
 	private ListView listView;
 	private GroupsAdapter adapter;
 	
-	private ArrayList<GroupBean> groupsList;
+	private ArrayList<Group> groupsList;
 	private boolean isLoading;
 	private boolean isFirstLoading = true;
 	private boolean hasMoreData = true;
@@ -70,7 +70,7 @@ public class PublicGroupsActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_public_groups);
         mContext = this;
-        groupsList = new ArrayList<GroupBean>();
+        groupsList = new ArrayList<Group>();
         userName = SuperWeChatApplication.getInstance().getUserName();
         initView();
         //获取及显示数据
@@ -144,8 +144,8 @@ public class PublicGroupsActivity extends BaseActivity {
 	private void loadAndShowData(){
         try {
             isLoading = true;
-            ArrayList<GroupBean> publicGroupList = SuperWeChatApplication.getInstance().getPublicGroupList();
-            for (GroupBean g: publicGroupList){
+            ArrayList<Group> publicGroupList = SuperWeChatApplication.getInstance().getPublicGroupList();
+            for (Group g: publicGroupList){
                 if(!groupsList.contains(g)){
                     groupsList.add(g);
                 }
@@ -206,9 +206,9 @@ public class PublicGroupsActivity extends BaseActivity {
 
 		private LayoutInflater inflater;
         Context mContext;
-        ArrayList<GroupBean> mGroupList;
+        ArrayList<Group> mGroupList;
 
-		public GroupsAdapter(Context context, int res, ArrayList<GroupBean> groups) {
+		public GroupsAdapter(Context context, int res, ArrayList<Group> groups) {
 			this.inflater = LayoutInflater.from(context);
             mContext = context;
             mGroupList = groups;
@@ -220,7 +220,7 @@ public class PublicGroupsActivity extends BaseActivity {
         }
 
         @Override
-        public GroupBean getItem(int position) {
+        public Group getItem(int position) {
             return mGroupList.get(position);
         }
 
@@ -235,7 +235,7 @@ public class PublicGroupsActivity extends BaseActivity {
 				convertView = inflater.inflate(R.layout.row_group, null);
 			}
 
-			((TextView) convertView.findViewById(R.id.name)).setText(getItem(position).getName());
+			((TextView) convertView.findViewById(R.id.name)).setText(getItem(position).getMGroupName());
             UserUtils.setGroupBeanAvatar(getItem(position),((NetworkImageView)convertView.findViewById(R.id.avatar)));
 
 			return convertView;
