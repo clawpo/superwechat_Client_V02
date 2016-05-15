@@ -47,14 +47,16 @@ import com.easemob.util.EMLog;
 import com.easemob.util.NetUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
-import cn.ucai.superwechat.bean.GroupBean;
-import cn.ucai.superwechat.bean.MessageBean;
-import cn.ucai.superwechat.bean.UserBean;
+import cn.ucai.superwechat.bean.Contact;
+import cn.ucai.superwechat.bean.Group;
+import cn.ucai.superwechat.bean.Member;
+import cn.ucai.superwechat.bean.Message;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.data.RequestManager;
@@ -75,12 +77,12 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 
 	private ExpandGridView userGridview;
 	private String groupId;
-    ArrayList<UserBean> mGroupMembers;
+    ArrayList<Member> mGroupMembers;
 	private ProgressBar loadingPB;
 	private Button exitBtn;
 	private Button deleteBtn;
 	private EMGroup group;
-	private GroupBean mGroup;
+	private Group mGroup;
 	private GridAdapter adapter;
 	private int referenceWidth;
 	private int referenceHeight;
@@ -112,7 +114,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	    
 	    // 获取传过来的groupid
         groupId = getIntent().getStringExtra("groupId");
-        mGroup=(GroupBean) getIntent().getSerializableExtra("group");
+        mGroup=(Group) getIntent().getSerializableExtra("group");
         mGroupMembers = SuperWeChatApplication.getInstance().getGroupMembers().get(groupId);
         group = EMGroupManager.getInstance().getGroup(groupId);
 
@@ -220,14 +222,14 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 			}
 			switch (requestCode) {
 			case REQUEST_CODE_ADD_USER:// 添加群成员
-				final String[] newmembers = data.getStringArrayExtra("newmembers");
+				final Contact[] newmembers = (Contact[])data.getSerializableExtra("newmembers");
 				progressDialog.setMessage(st1);
 				progressDialog.show();
 				addMembersToGroup(newmembers);
 				break;
 			case REQUEST_CODE_EXIT: // 退出群
                 String userName=SuperWeChatApplication.getInstance().getUserName();
-                if(!mGroup.getOwner().equals(userName)) {
+                if(!mGroup.getMGroupOwner().equals(userName)) {
                     progressDialog.setMessage(st2);
                     progressDialog.show();
                     exitGrop();
@@ -252,20 +254,17 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 					progressDialog.show();
                     try {
                         String path = new ApiParams()
-                                .with(I.Group.GROUP_ID, mGroup.getGroupId())
+                                .with(I.Group.GROUP_ID, mGroup.getMGroupId()+"")
                                 .with(I.Group.NAME, returnData)
                                 .getRequestUrl(I.REQUEST_UPDATE_GROUP_NAME);
-                        executeRequest(new GsonRequest<MessageBean>(path, MessageBean.class,
-                                new Response.Listener<MessageBean>() {
+                        executeRequest(new GsonRequest<Group>(path, Group.class,
+                                new Response.Listener<Group>() {
                                     @Override
-                                    public void onResponse(MessageBean messageBean) {
-                                        if(messageBean.isSuccess()){
-                                            ArrayList<GroupBean> groupList =
+                                    public void onResponse(Group g) {
+                                        if(g.isResult()){
+                                            ArrayList<Group> groupList =
                                                     SuperWeChatApplication.getInstance().getGroupList();
-                                            int index = groupList.indexOf(mGroup);
-                                            if(index>0){
-                                                groupList.get(index).setName(returnData);
-                                            }
+											groupList.add(g);
                                             sendStickyBroadcast(new Intent("update_group_name")
                                                     .putExtra("groupName", returnData));
 
@@ -379,14 +378,14 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 			public void run() {
 				try {
                     String username=SuperWeChatApplication.getInstance().getUserName();
-                    String path = new ApiParams().with(I.Member.GROUP_ID, mGroup.getGroupId())
+                    String path = new ApiParams().with(I.Member.GROUP_ID, mGroup.getMGroupId()+"")
                             .with(I.Member.USER_NAME, username)
                             .getRequestUrl(I.REQUEST_DELETE_GROUP_MEMBER);
-                    executeRequest(new GsonRequest<Boolean>(path, Boolean.class,
-                            new Response.Listener<Boolean>() {
+                    executeRequest(new GsonRequest<Message>(path, Message.class,
+                            new Response.Listener<Message>() {
                                 @Override
-                                public void onResponse(Boolean aBoolean) {
-                                    if(aBoolean){
+                                public void onResponse(Message msg) {
+                                    if(msg.isResult()){
                                         try {
                                             EMGroupManager.getInstance().exitFromGroup(groupId);
                                         } catch (EaseMobException e) {
@@ -424,13 +423,13 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-                    String path = new ApiParams().with(I.Group.GROUP_ID, mGroup.getGroupId())
+                    String path = new ApiParams().with(I.Group.GROUP_ID, mGroup.getMGroupId()+"")
                             .getRequestUrl(I.REQUEST_DELETE_GROUP);
-                    executeRequest(new GsonRequest<MessageBean>(path, MessageBean.class,
-                            new Response.Listener<MessageBean>() {
+                    executeRequest(new GsonRequest<Message>(path, Message.class,
+                            new Response.Listener<Message>() {
                                 @Override
-                                public void onResponse(MessageBean messageBean) {
-                                    if(messageBean.isSuccess()){
+                                public void onResponse(Message msg) {
+                                    if(msg.isResult()){
                                         try {
                                             EMGroupManager.getInstance().exitAndDeleteGroup(groupId);
                                         } catch (EaseMobException e) {
@@ -462,38 +461,45 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	/**
 	 * 增加群成员
 	 * 
-	 * @param newmembers
+	 * @param newmemberArray
 	 */
-	private void addMembersToGroup(final String[] newmembers) {
+	private void addMembersToGroup(final Contact[] newmemberArray) {
 		final String st6 = getResources().getString(R.string.Add_group_members_fail);
 		new Thread(new Runnable() {
 
 			public void run() {
 				try {
 
-                    StringBuilder newGroupMembers = new StringBuilder();
-                    for (String member : newmembers) {
-                        newGroupMembers.append(member).append(",");
+                    StringBuilder userIds = new StringBuilder();
+					final StringBuilder userNames = new StringBuilder();
+                    for (Contact member : newmemberArray) {
+						userIds.append(member.getMContactCid()).append(",");
+                        userNames.append(member.getMContactCname()).append(",");
                     }
-                    newGroupMembers.deleteCharAt(newGroupMembers.length() - 1);
-                    Log.e(TAG,"members="+newGroupMembers.toString());
-                    String path = new ApiParams().with(I.Group.GROUP_NAME, groupId)
-                            .with(I.Group.MEMBERS, newGroupMembers.toString())
+                    userIds.deleteCharAt(userIds.length() - 1);
+                    userNames.deleteCharAt(userNames.length() - 1);
+                    Log.e(TAG,"members="+userNames.toString());
+                    String path = new ApiParams().with(I.Member.GROUP_HX_ID, groupId)
+                            .with(I.Member.USER_ID,userIds.toString())
+                            .with(I.Member.USER_NAME,userNames.toString())
                             .getRequestUrl(I.REQUEST_ADD_GROUP_MEMBERS);
-                    executeRequest(new GsonRequest<MessageBean>(path, MessageBean.class,
-                            new Response.Listener<MessageBean>() {
+                    executeRequest(new GsonRequest<Message>(path, Message.class,
+                            new Response.Listener<Message>() {
                                 @Override
-                                public void onResponse(MessageBean messageBean) {
-                                    if(messageBean.isSuccess()){
-                                        ArrayList<UserBean> contactList = SuperWeChatApplication.getInstance().getContactList();
-                                        for(int i=0;i<newmembers.length;i++){
-                                            UserBean user = new UserBean(newmembers[i]);
-                                            int id=contactList.indexOf(user);
-                                            if(id>=0){
-                                                mGroupMembers.add(user);
-//                                                adapter.notifyDataSetChanged();
-
+                                public void onResponse(Message msg) {
+                                    if(msg.isResult()){
+                                        HashMap<String, Contact> userList = SuperWeChatApplication.getInstance().getUserList();
+                                        for(int i=0;i<newmemberArray.length;i++){
+                                            if(userList.containsKey(newmemberArray[i].getMContactCname())){
+                                                Member m = new Member(newmemberArray[i].getMContactCid(),newmemberArray[i].getMContactCname(),
+                                                        mGroup.getMGroupId(),mGroup.getMGroupHxid(),I.PERMISSION_NORMAL);
+                                                mGroupMembers.add(m);
                                             }
+                                        }
+
+                                        String[] newmembers = new String[newmemberArray.length];
+                                        for (int i=0;i<newmemberArray.length;i++){
+                                            newmembers[i] = newmemberArray[i].getMContactCname();
                                         }
                                         try {
                                             // 创建者调用add方法
@@ -646,10 +652,10 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		private int res;
 		public boolean isInDeleteMode;
 		private List<String> objects;
-        private ArrayList<UserBean> list;
+        private ArrayList<Member> list;
         private Context context;
 
-		public GridAdapter(Context context, int textViewResourceId, ArrayList<UserBean> list) {
+		public GridAdapter(Context context, int textViewResourceId, ArrayList<Member> list) {
             this.context = context;
 			this.list = list;
 			res = textViewResourceId;
@@ -734,7 +740,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				}
 			} else { // 普通item，显示群组成员
 //				final String username = getItem(position);
-                final UserBean user = getItem(position);
+                final Member user = getItem(position);
 				convertView.setVisibility(View.VISIBLE);
 				button.setVisibility(View.VISIBLE);
 //				Drawable avatar = getResources().getDrawable(R.drawable.default_avatar);
@@ -760,7 +766,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 					public void onClick(View v) {
 						if (isInDeleteMode) {
 							// 如果是删除自己，return
-							if (EMChatManager.getInstance().getCurrentUser().equals(user.getUserName())) {
+							if (EMChatManager.getInstance().getCurrentUser().equals(user.getMMemberUserName())) {
 								startActivity(new Intent(GroupDetailsActivity.this, AlertDialog.class).putExtra("msg", st12));
 								return;
 							}
@@ -768,18 +774,18 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 								Toast.makeText(getApplicationContext(), getString(R.string.network_unavailable), Toast.LENGTH_SHORT).show();
 								return;
 							}
-							EMLog.d("group", "remove user from group:" + user.getUserName());
+							EMLog.d("group", "remove user from group:" + user.getMMemberUserName());
                             try {
-                                String path = new ApiParams().with(I.Group.GROUP_NAME, mGroup.getName())
-                                        .with(I.Group.MEMBERS, user.getUserName())
+                                String path = new ApiParams().with(I.Member.GROUP_ID, mGroup.getMGroupId()+"")
+                                        .with(I.Member.USER_NAME, user.getMMemberUserName())
                                         .getRequestUrl(I.REQUEST_DELETE_GROUP_MEMBER);
-                                executeRequest(new GsonRequest<Boolean>(path, Boolean.class,
-                                    new Response.Listener<Boolean>() {
+                                executeRequest(new GsonRequest<Message>(path, Message.class,
+                                    new Response.Listener<Message>() {
                                         @Override
-                                        public void onResponse(Boolean aBoolean) {
+                                        public void onResponse(Message msg) {
                                             String str= getApplication().getString(R.string.Removed_from_the_failure);
-                                            if(aBoolean){
-                                                deleteMembersFromGroup(user.getUserName());
+                                            if(msg.isResult()){
+                                                deleteMembersFromGroup(user.getMMemberUserName());
                                                 str = getApplication().getString(R.string.Delete_successfully);
                                                 mGroupMembers.remove(user);
                                                 notifyDataSetChanged();
@@ -793,7 +799,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 						} else {
 							// 正常情况下点击user，可以进入用户详情或者聊天页面等等
 							 startActivity(new Intent(GroupDetailsActivity.this,
-							 UserProfileActivity.class).putExtra("username",user.getUserName())
+							 UserProfileActivity.class).putExtra("username",user.getMMemberUserName())
                                      .putExtra("groupId", groupId)
                                      .putExtra("chatType", EMMessage.ChatType.GroupChat));
 
@@ -846,14 +852,14 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 
 					@Override
 					public boolean onLongClick(View v) {
-					    if(EMChatManager.getInstance().getCurrentUser().equals(user.getUserName()))
+					    if(EMChatManager.getInstance().getCurrentUser().equals(user.getMMemberUserName()))
 					        return true;
 						if (group.getOwner().equals(EMChatManager.getInstance().getCurrentUser())) {
 							Intent intent = new Intent(GroupDetailsActivity.this, AlertDialog.class);
 							intent.putExtra("msg", st15);
 							intent.putExtra("cancel", true);
 							startActivityForResult(intent, REQUEST_CODE_ADD_TO_BALCKLIST);
-							longClickUsername = user.getUserName();
+							longClickUsername = user.getMMemberUserName();
 						}
 						return false;
 					}
@@ -868,7 +874,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		}
 
         @Override
-        public UserBean getItem(int position) {
+        public Member getItem(int position) {
             return list.get(position);
         }
 

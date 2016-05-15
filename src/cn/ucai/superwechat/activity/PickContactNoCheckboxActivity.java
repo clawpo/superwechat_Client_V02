@@ -25,17 +25,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import cn.ucai.superwechat.Constant;
-import cn.ucai.superwechat.DemoHXSDKHelper;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.adapter.ContactAdapter;
-import cn.ucai.superwechat.applib.controller.HXSDKHelper;
-import cn.ucai.superwechat.bean.UserBean;
+import cn.ucai.superwechat.bean.Contact;
 import cn.ucai.superwechat.widget.Sidebar;
 
 
@@ -44,7 +40,7 @@ public class PickContactNoCheckboxActivity extends BaseActivity {
 	private ListView listView;
 	private Sidebar sidebar;
 	protected ContactAdapter contactAdapter;
-	private ArrayList<UserBean> contactList;
+	private ArrayList<Contact> contactList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +49,7 @@ public class PickContactNoCheckboxActivity extends BaseActivity {
 		listView = (ListView) findViewById(R.id.list);
 		sidebar = (Sidebar) findViewById(R.id.sidebar);
 		sidebar.setListView(listView);
-		contactList = new ArrayList<UserBean>();
+		contactList = new ArrayList<Contact>();
 		// 获取设置contactlist
 		getContactList();
 		// 设置adapter
@@ -72,7 +68,7 @@ public class PickContactNoCheckboxActivity extends BaseActivity {
 	protected void onListItemClick(int position) {
 //		if (position != 0) {
 			setResult(RESULT_OK, new Intent().putExtra("username", contactAdapter.getItem(position)
-					.getUserName()));
+					.getMContactCname()));
 			finish();
 //		}
 	}
@@ -83,19 +79,19 @@ public class PickContactNoCheckboxActivity extends BaseActivity {
 
 	private void getContactList() {
 		contactList.clear();
-        HashMap<String, UserBean> users = SuperWeChatApplication.getInstance().getUserList();
-        Iterator<Entry<String, UserBean>> iterator = users.entrySet().iterator();
+		HashMap<String, Contact> users = SuperWeChatApplication.getInstance().getUserList();
+		Iterator<Entry<String, Contact>> iterator = users.entrySet().iterator();
 		while (iterator.hasNext()) {
-			Entry<String, UserBean> entry = iterator.next();
+			Entry<String, Contact> entry = iterator.next();
 			if (!entry.getKey().equals(Constant.NEW_FRIENDS_USERNAME) && !entry.getKey().equals(Constant.GROUP_USERNAME) && !entry.getKey().equals(Constant.CHAT_ROOM) && !entry.getKey().equals(Constant.CHAT_ROBOT))
 				contactList.add(entry.getValue());
 		}
 		// 排序
-		Collections.sort(contactList, new Comparator<UserBean>() {
+		Collections.sort(contactList, new Comparator<Contact>() {
 
 			@Override
-			public int compare(UserBean lhs, UserBean rhs) {
-				return lhs.getUserName().compareTo(rhs.getUserName());
+			public int compare(Contact lhs, Contact rhs) {
+				return lhs.getMContactCname().compareTo(rhs.getMContactCname());
 			}
 		});
 	}
