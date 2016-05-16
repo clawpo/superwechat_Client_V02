@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.ucai.superwechat.SuperWeChatApplication;
+
 /**
  * Created by yao on 2016/4/6.
  * OkHttp框架的二次封装
@@ -55,7 +57,7 @@ public class OkHttpUtils<T> {
         mUrl = new StringBuilder();
         mokHttpClient = new OkHttpClient();
         //处理服务端响应成功和失败的消息
-        mHandler = new Handler() {
+        mHandler = new Handler(SuperWeChatApplication.applicationContext.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
