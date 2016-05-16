@@ -102,7 +102,12 @@ public class UserUtils {
      */
     public static void setUserBeanAvatar(String username, NetworkImageView imageView){
         Contact user = getUserBeanInfo(username);
-        setUserAvatar(user,imageView);
+        if(user!=null) {
+            setUserAvatar(user, imageView);
+        }else{
+            String path = I.DOWNLOAD_USER_AVATAR_URL + username;
+            imageView.setImageUrl(path, RequestManager.getImageLoader());
+        }
     }
 
     public static void setGroupMemberAvatar(String hxid,String username,NetworkImageView imageView){
