@@ -53,6 +53,6 @@ public class Utils {
         String msgStr = msg+"";
         msgStr = I.MSG_PREFIX_MSG + msgStr;
         int resId = context.getResources().getIdentifier(msgStr, "string", context.getPackageName());
-        return context.getResources().getResourceName(resId);
+        return context.getResources().getString(resId);
     }
 }
