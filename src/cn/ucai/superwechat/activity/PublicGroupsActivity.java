@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -153,7 +154,7 @@ public class PublicGroupsActivity extends BaseActivity {
             searchBtn.setVisibility(View.VISIBLE);
             if(publicGroupList.size() != 0){
                 //获取cursor
-                if(groupsList.size() == publicGroupList.size())
+                if(groupsList.size() < publicGroupList.size())
                     footLoadingLayout.setVisibility(View.VISIBLE);
             }
             if(isFirstLoading){
