@@ -12,11 +12,11 @@ public class User extends Location implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	private Integer MUserId;
-	private String MUserName;
-	private String MUserPassword;
-	private String MUserNick;
-	private Integer MUserUnreadMsgCount;
+	private Integer muserId;
+	private String muserName;
+	private String muserPassword;
+	private String muserNick;
+	private Integer muserUnreadMsgCount=0;
 	private String header;
 
 	// Constructors
@@ -32,58 +32,58 @@ public class User extends Location implements java.io.Serializable {
 
 	/** minimal constructor */
 	public User(Integer MUserId, String MUserName, String MUserPassword, String MUserNick) {
-		this.MUserId = MUserId;
-		this.MUserName = MUserName;
-		this.MUserPassword = MUserPassword;
-		this.MUserNick = MUserNick;
+		this.muserId = MUserId;
+		this.muserName = MUserName;
+		this.muserPassword = MUserPassword;
+		this.muserNick = MUserNick;
 	}
 
 	/** full constructor */
 	public User(Integer MUserId, String MUserName, String MUserPassword, String MUserNick,
 			Integer MUserUnreadMsgCount) {
 		this(MUserId, MUserName, MUserPassword, MUserNick);
-		this.MUserUnreadMsgCount = MUserUnreadMsgCount;
+		this.muserUnreadMsgCount = MUserUnreadMsgCount;
 	}
 
 	// Property accessors
 	public Integer getMUserId() {
-		return this.MUserId;
+		return this.muserId;
 	}
 
 	public void setMUserId(Integer MUserId) {
-		this.MUserId = MUserId;
+		this.muserId = MUserId;
 	}
 
 	public String getMUserName() {
-		return this.MUserName;
+		return this.muserName;
 	}
 
 	public void setMUserName(String MUserName) {
-		this.MUserName = MUserName;
+		this.muserName = MUserName;
 	}
 
 	public String getMUserPassword() {
-		return this.MUserPassword;
+		return this.muserPassword;
 	}
 
 	public void setMUserPassword(String MUserPassword) {
-		this.MUserPassword = MUserPassword;
+		this.muserPassword = MUserPassword;
 	}
 
 	public String getMUserNick() {
-		return this.MUserNick;
+		return this.muserNick;
 	}
 
 	public void setMUserNick(String MUserNick) {
-		this.MUserNick = MUserNick;
+		this.muserNick = MUserNick;
 	}
 
 	public Integer getMUserUnreadMsgCount() {
-		return this.MUserUnreadMsgCount;
+		return this.muserUnreadMsgCount;
 	}
 
 	public void setMUserUnreadMsgCount(Integer MUserUnreadMsgCount) {
-		this.MUserUnreadMsgCount = MUserUnreadMsgCount;
+		this.muserUnreadMsgCount = MUserUnreadMsgCount;
 	}
 
 	public String getHeader() {
@@ -96,9 +96,9 @@ public class User extends Location implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return "User [MUserId=" + MUserId + ", MUserName=" + MUserName
-				+ ", MUserPassword=" + MUserPassword + ", MUserNick="
-				+ MUserNick + ", MUserUnreadMsgCount=" + MUserUnreadMsgCount
+		return "User [MUserId=" + muserId + ", MUserName=" + muserName
+				+ ", MUserPassword=" + muserPassword + ", MUserNick="
+				+ muserNick + ", MUserUnreadMsgCount=" + muserUnreadMsgCount
 				+ ", header=" + header + "]";
 	}
 

@@ -12,16 +12,16 @@ public class Group extends Location implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	private Integer MGroupId;
-	private String MGroupHxid;
-	private String MGroupName;
-	private String MGroupDescription;
-	private String MGroupOwner;
-	private String MGroupLastModifiedTime;
-	private Integer MGroupMaxUsers;
-	private Integer MGroupAffiliationsCount;
-	private Boolean MGroupIsPublic;
-	private Boolean MGroupAllowInvites;
+	private Integer mgroupId;
+	private String mgroupHxid;
+	private String mgroupName;
+	private String mgroupDescription;
+	private String mgroupOwner;
+	private String mgroupLastModifiedTime;
+	private Integer mgroupMaxUsers;
+	private Integer mgroupAffiliationsCount;
+	private Boolean mgroupIsPublic;
+	private Boolean mgroupAllowInvites;
 
 	// Constructors
 
@@ -33,11 +33,11 @@ public class Group extends Location implements java.io.Serializable {
 	public Group(String MGroupOwner, String MGroupLastModifiedTime,
 			Integer MGroupAffiliationsCount, Boolean MGroupIsPublic,
 			Boolean MGroupAllowInvites) {
-		this.MGroupOwner = MGroupOwner;
-		this.MGroupLastModifiedTime = MGroupLastModifiedTime;
-		this.MGroupAffiliationsCount = MGroupAffiliationsCount;
-		this.MGroupIsPublic = MGroupIsPublic;
-		this.MGroupAllowInvites = MGroupAllowInvites;
+		this.mgroupOwner = MGroupOwner;
+		this.mgroupLastModifiedTime = MGroupLastModifiedTime;
+		this.mgroupAffiliationsCount = MGroupAffiliationsCount;
+		this.mgroupIsPublic = MGroupIsPublic;
+		this.mgroupAllowInvites = MGroupAllowInvites;
 	}
 
 	/** full constructor */
@@ -48,10 +48,10 @@ public class Group extends Location implements java.io.Serializable {
 			Boolean MGroupAllowInvites) {
 		this(MGroupOwner, MGroupLastModifiedTime, MGroupAffiliationsCount,
 				MGroupIsPublic, MGroupAllowInvites);
-		this.MGroupHxid = MGroupHxid;
-		this.MGroupName = MGroupName;
-		this.MGroupDescription = MGroupDescription;
-		this.MGroupMaxUsers = MGroupMaxUsers;
+		this.mgroupHxid = MGroupHxid;
+		this.mgroupName = MGroupName;
+		this.mgroupDescription = MGroupDescription;
+		this.mgroupMaxUsers = MGroupMaxUsers;
 	}
 
 	public Group(boolean result, int msg) {
@@ -61,95 +61,95 @@ public class Group extends Location implements java.io.Serializable {
 
 	// Property accessors
 	public Integer getMGroupId() {
-		return this.MGroupId;
+		return this.mgroupId;
 	}
 
 	public void setMGroupId(Integer MGroupId) {
-		this.MGroupId = MGroupId;
+		this.mgroupId = MGroupId;
 	}
 
 	public String getMGroupHxid() {
-		return this.MGroupHxid;
+		return this.mgroupHxid;
 	}
 
 	public void setMGroupHxid(String MGroupHxid) {
-		this.MGroupHxid = MGroupHxid;
+		this.mgroupHxid = MGroupHxid;
 	}
 
 	public String getMGroupName() {
-		return this.MGroupName;
+		return this.mgroupName;
 	}
 
 	public void setMGroupName(String MGroupName) {
-		this.MGroupName = MGroupName;
+		this.mgroupName = MGroupName;
 	}
 
 	public String getMGroupDescription() {
-		return this.MGroupDescription;
+		return this.mgroupDescription;
 	}
 
 	public void setMGroupDescription(String MGroupDescription) {
-		this.MGroupDescription = MGroupDescription;
+		this.mgroupDescription = MGroupDescription;
 	}
 
 	public String getMGroupOwner() {
-		return this.MGroupOwner;
+		return this.mgroupOwner;
 	}
 
 	public void setMGroupOwner(String MGroupOwner) {
-		this.MGroupOwner = MGroupOwner;
+		this.mgroupOwner = MGroupOwner;
 	}
 
 	public String getMGroupLastModifiedTime() {
-		return this.MGroupLastModifiedTime;
+		return this.mgroupLastModifiedTime;
 	}
 
 	public void setMGroupLastModifiedTime(String MGroupLastModifiedTime) {
-		this.MGroupLastModifiedTime = MGroupLastModifiedTime;
+		this.mgroupLastModifiedTime = MGroupLastModifiedTime;
 	}
 
 	public Integer getMGroupMaxUsers() {
-		return this.MGroupMaxUsers;
+		return this.mgroupMaxUsers;
 	}
 
 	public void setMGroupMaxUsers(Integer MGroupMaxUsers) {
-		this.MGroupMaxUsers = MGroupMaxUsers;
+		this.mgroupMaxUsers = MGroupMaxUsers;
 	}
 
 	public Integer getMGroupAffiliationsCount() {
-		return this.MGroupAffiliationsCount;
+		return this.mgroupAffiliationsCount;
 	}
 
 	public void setMGroupAffiliationsCount(Integer MGroupAffiliationsCount) {
-		this.MGroupAffiliationsCount = MGroupAffiliationsCount;
+		this.mgroupAffiliationsCount = MGroupAffiliationsCount;
 	}
 
 	public Boolean getMGroupIsPublic() {
-		return this.MGroupIsPublic;
+		return this.mgroupIsPublic;
 	}
 
 	public void setMGroupIsPublic(Boolean MGroupIsPublic) {
-		this.MGroupIsPublic = MGroupIsPublic;
+		this.mgroupIsPublic = MGroupIsPublic;
 	}
 
 	public Boolean getMGroupAllowInvites() {
-		return this.MGroupAllowInvites;
+		return this.mgroupAllowInvites;
 	}
 
 	public void setMGroupAllowInvites(Boolean MGroupAllowInvites) {
-		this.MGroupAllowInvites = MGroupAllowInvites;
+		this.mgroupAllowInvites = MGroupAllowInvites;
 	}
 
 	@Override
 	public String toString() {
-		return "Group [MGroupId=" + MGroupId + ", MGroupHxid=" + MGroupHxid
-				+ ", MGroupName=" + MGroupName + ", MGroupDescription="
-				+ MGroupDescription + ", MGroupOwner=" + MGroupOwner
-				+ ", MGroupLastModifiedTime=" + MGroupLastModifiedTime
-				+ ", MGroupMaxUsers=" + MGroupMaxUsers
-				+ ", MGroupAffiliationsCount=" + MGroupAffiliationsCount
-				+ ", MGroupIsPublic=" + MGroupIsPublic
-				+ ", MGroupAllowInvites=" + MGroupAllowInvites + "]";
+		return "Group [MGroupId=" + mgroupId + ", MGroupHxid=" + mgroupHxid
+				+ ", MGroupName=" + mgroupName + ", MGroupDescription="
+				+ mgroupDescription + ", MGroupOwner=" + mgroupOwner
+				+ ", MGroupLastModifiedTime=" + mgroupLastModifiedTime
+				+ ", MGroupMaxUsers=" + mgroupMaxUsers
+				+ ", MGroupAffiliationsCount=" + mgroupAffiliationsCount
+				+ ", MGroupIsPublic=" + mgroupIsPublic
+				+ ", MGroupAllowInvites=" + mgroupAllowInvites + "]";
 	}
 
 	@Override

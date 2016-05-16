@@ -10,11 +10,11 @@ public class Avatar extends Message implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	private Integer MAvatarId;
-	private Integer MAvatarUserId;
-	private String MAvatarUserName;
-	private String MAvatarPath;
-	private Integer MAvatarType;
+	private Integer mavatarId;
+	private Integer mavatarUserId;
+	private String mavatarUserName;
+	private String mavatarPath;
+	private Integer mavatarType;
 
 	// Constructors
 
@@ -25,59 +25,59 @@ public class Avatar extends Message implements java.io.Serializable {
 	/** full constructor */
 	public Avatar(Integer MAvatarUserId, String MAvatarUserName,
 			String MAvatarPath, Integer MAvatarType) {
-		this.MAvatarUserId = MAvatarUserId;
-		this.MAvatarUserName = MAvatarUserName;
-		this.MAvatarPath = MAvatarPath;
-		this.MAvatarType = MAvatarType;
+		this.mavatarUserId = MAvatarUserId;
+		this.mavatarUserName = MAvatarUserName;
+		this.mavatarPath = MAvatarPath;
+		this.mavatarType = MAvatarType;
 	}
 
 	// Property accessors
 	public Integer getMAvatarId() {
-		return this.MAvatarId;
+		return this.mavatarId;
 	}
 
 	public void setMAvatarId(Integer MAvatarId) {
-		this.MAvatarId = MAvatarId;
+		this.mavatarId = MAvatarId;
 	}
 
 	public Integer getMAvatarUserId() {
-		return this.MAvatarUserId;
+		return this.mavatarUserId;
 	}
 
 	public void setMAvatarUserId(Integer MAvatarUserId) {
-		this.MAvatarUserId = MAvatarUserId;
+		this.mavatarUserId = MAvatarUserId;
 	}
 
 	public String getMAvatarUserName() {
-		return this.MAvatarUserName;
+		return this.mavatarUserName;
 	}
 
 	public void setMAvatarUserName(String MAvatarUserName) {
-		this.MAvatarUserName = MAvatarUserName;
+		this.mavatarUserName = MAvatarUserName;
 	}
 
 	public String getMAvatarPath() {
-		return this.MAvatarPath;
+		return this.mavatarPath;
 	}
 
 	public void setMAvatarPath(String MAvatarPath) {
-		this.MAvatarPath = MAvatarPath;
+		this.mavatarPath = MAvatarPath;
 	}
 
 	public Integer getMAvatarType() {
-		return this.MAvatarType;
+		return this.mavatarType;
 	}
 
 	public void setMAvatarType(Integer MAvatarType) {
-		this.MAvatarType = MAvatarType;
+		this.mavatarType = MAvatarType;
 	}
 
 	@Override
 	public String toString() {
-		return "Avatar [MAvatarId=" + MAvatarId + ", MAvatarUserId="
-				+ MAvatarUserId + ", MAvatarUserName=" + MAvatarUserName
-				+ ", MAvatarPath=" + MAvatarPath + ", MAvatarType="
-				+ MAvatarType + "]";
+		return "Avatar [MAvatarId=" + mavatarId + ", MAvatarUserId="
+				+ mavatarUserId + ", MAvatarUserName=" + mavatarUserName
+				+ ", MAvatarPath=" + mavatarPath + ", MAvatarType="
+				+ mavatarType + "]";
 	}
 	
 	

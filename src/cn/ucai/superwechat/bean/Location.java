@@ -12,13 +12,13 @@ public class Location extends Avatar implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	private Integer MLocationId;
-	private Integer MLocationUserId;
-	private String MLocationUserName;
-	private Double MLocationLatitude;
-	private Double MLocationLongitude;
-	private Boolean MLocationIsSearched;
-	private String MLocationLastUpdateTime;
+	private Integer mlocationId;
+	private Integer mlocationUserId;
+	private String mlocationUserName;
+	private Double mlocationLatitude;
+	private Double mlocationLongitude;
+	private Boolean mlocationIsSearched;
+	private String mlocationLastUpdateTime;
 
 	// Constructors
 
@@ -29,88 +29,88 @@ public class Location extends Avatar implements java.io.Serializable {
 	/** minimal constructor */
 	public Location(Integer MLocationUserId, String MLocationUserName,
 			Boolean MLocationIsSearched) {
-		this.MLocationUserId = MLocationUserId;
-		this.MLocationUserName = MLocationUserName;
-		this.MLocationIsSearched = MLocationIsSearched;
+		this.mlocationUserId = MLocationUserId;
+		this.mlocationUserName = MLocationUserName;
+		this.mlocationIsSearched = MLocationIsSearched;
 	}
 
 	/** full constructor */
 	public Location(Integer MLocationUserId, String MLocationUserName,
 			Double MLocationLatitude, Double MLocationLongitude,
 			Boolean MLocationIsSearched, String MLocationLastUpdateTime) {
-		this.MLocationUserId = MLocationUserId;
-		this.MLocationUserName = MLocationUserName;
-		this.MLocationLatitude = MLocationLatitude;
-		this.MLocationLongitude = MLocationLongitude;
-		this.MLocationIsSearched = MLocationIsSearched;
-		this.MLocationLastUpdateTime = MLocationLastUpdateTime;
+		this.mlocationUserId = MLocationUserId;
+		this.mlocationUserName = MLocationUserName;
+		this.mlocationLatitude = MLocationLatitude;
+		this.mlocationLongitude = MLocationLongitude;
+		this.mlocationIsSearched = MLocationIsSearched;
+		this.mlocationLastUpdateTime = MLocationLastUpdateTime;
 	}
 
 	// Property accessors
 	public Integer getMLocationId() {
-		return this.MLocationId;
+		return this.mlocationId;
 	}
 
 	public void setMLocationId(Integer MLocationId) {
-		this.MLocationId = MLocationId;
+		this.mlocationId = MLocationId;
 	}
 
 	public Integer getMLocationUserId() {
-		return this.MLocationUserId;
+		return this.mlocationUserId;
 	}
 
 	public void setMLocationUserId(Integer MLocationUserId) {
-		this.MLocationUserId = MLocationUserId;
+		this.mlocationUserId = MLocationUserId;
 	}
 
 	public String getMLocationUserName() {
-		return this.MLocationUserName;
+		return this.mlocationUserName;
 	}
 
 	public void setMLocationUserName(String MLocationUserName) {
-		this.MLocationUserName = MLocationUserName;
+		this.mlocationUserName = MLocationUserName;
 	}
 
 	public Double getMLocationLatitude() {
-		return this.MLocationLatitude;
+		return this.mlocationLatitude;
 	}
 
 	public void setMLocationLatitude(Double MLocationLatitude) {
-		this.MLocationLatitude = MLocationLatitude;
+		this.mlocationLatitude = MLocationLatitude;
 	}
 
 	public Double getMLocationLongitude() {
-		return this.MLocationLongitude;
+		return this.mlocationLongitude;
 	}
 
 	public void setMLocationLongitude(Double MLocationLongitude) {
-		this.MLocationLongitude = MLocationLongitude;
+		this.mlocationLongitude = MLocationLongitude;
 	}
 
 	public Boolean getMLocationIsSearched() {
-		return this.MLocationIsSearched;
+		return this.mlocationIsSearched;
 	}
 
 	public void setMLocationIsSearched(Boolean MLocationIsSearched) {
-		this.MLocationIsSearched = MLocationIsSearched;
+		this.mlocationIsSearched = MLocationIsSearched;
 	}
 
 	public String getMLocationLastUpdateTime() {
-		return this.MLocationLastUpdateTime;
+		return this.mlocationLastUpdateTime;
 	}
 
 	public void setMLocationLastUpdateTime(String MLocationLastUpdateTime) {
-		this.MLocationLastUpdateTime = MLocationLastUpdateTime;
+		this.mlocationLastUpdateTime = MLocationLastUpdateTime;
 	}
 
 	@Override
 	public String toString() {
-		return "Location [MLocationId=" + MLocationId + ", MLocationUserId="
-				+ MLocationUserId + ", MLocationUserName=" + MLocationUserName
-				+ ", MLocationLatitude=" + MLocationLatitude
-				+ ", MLocationLongitude=" + MLocationLongitude
-				+ ", MLocationIsSearched=" + MLocationIsSearched
-				+ ", MLocationLastUpdateTime=" + MLocationLastUpdateTime + "]";
+		return "Location [MLocationId=" + mlocationId + ", MLocationUserId="
+				+ mlocationUserId + ", MLocationUserName=" + mlocationUserName
+				+ ", MLocationLatitude=" + mlocationLatitude
+				+ ", MLocationLongitude=" + mlocationLongitude
+				+ ", MLocationIsSearched=" + mlocationIsSearched
+				+ ", MLocationLastUpdateTime=" + mlocationLastUpdateTime + "]";
 	}
 	
 

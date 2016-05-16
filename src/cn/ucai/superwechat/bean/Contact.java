@@ -11,11 +11,11 @@ public class Contact extends User implements java.io.Serializable {
 	 */
 	// Fields
 
-	private Integer MContactId;
-	private Integer MContactUserId;
-	private String MContactUserName;
-	private Integer MContactCid;
-	private String MContactCname;
+	private Integer mcontactId;
+	private Integer mcontactUserId;
+	private String mcontactUserName;
+	private Integer mcontactCid;
+	private String mcontactCname;
 
 	// Constructors
 
@@ -26,60 +26,60 @@ public class Contact extends User implements java.io.Serializable {
 	/** full constructor */
 	public Contact(Integer MContactId, Integer MContactUserId, String MContactUserName,
 			Integer MContactCid, String MContactCname) {
-		this.MContactId = MContactId;
-		this.MContactUserId = MContactUserId;
-		this.MContactUserName = MContactUserName;
-		this.MContactCid = MContactCid;
-		this.MContactCname = MContactCname;
+		this.mcontactId = MContactId;
+		this.mcontactUserId = MContactUserId;
+		this.mcontactUserName = MContactUserName;
+		this.mcontactCid = MContactCid;
+		this.mcontactCname = MContactCname;
 	}
 
 	// Property accessors
 	public Integer getMContactId() {
-		return this.MContactId;
+		return this.mcontactId;
 	}
 
 	public void setMContactId(Integer MContactId) {
-		this.MContactId = MContactId;
+		this.mcontactId = MContactId;
 	}
 
 	public Integer getMContactUserId() {
-		return this.MContactUserId;
+		return this.mcontactUserId;
 	}
 
 	public void setMContactUserId(Integer MContactUserId) {
-		this.MContactUserId = MContactUserId;
+		this.mcontactUserId = MContactUserId;
 	}
 
 	public String getMContactUserName() {
-		return this.MContactUserName;
+		return this.mcontactUserName;
 	}
 
 	public void setMContactUserName(String MContactUserName) {
-		this.MContactUserName = MContactUserName;
+		this.mcontactUserName = MContactUserName;
 	}
 
 	public Integer getMContactCid() {
-		return this.MContactCid;
+		return this.mcontactCid;
 	}
 
 	public void setMContactCid(Integer MContactCid) {
-		this.MContactCid = MContactCid;
+		this.mcontactCid = MContactCid;
 	}
 
 	public String getMContactCname() {
-		return this.MContactCname;
+		return this.mcontactCname;
 	}
 
 	public void setMContactCname(String MContactCname) {
-		this.MContactCname = MContactCname;
+		this.mcontactCname = MContactCname;
 	}
 
 	@Override
 	public String toString() {
-		return "Contact [MContactId=" + MContactId + ", MContactUserId="
-				+ MContactUserId + ", MContactUserName=" + MContactUserName
-				+ ", MContactCid=" + MContactCid + ", MContactCname="
-				+ MContactCname + "]";
+		return "Contact [MContactId=" + mcontactId + ", MContactUserId="
+				+ mcontactUserId + ", MContactUserName=" + mcontactUserName
+				+ ", MContactCid=" + mcontactCid + ", MContactCname="
+				+ mcontactCname + "]";
 	}
 
 	@Override

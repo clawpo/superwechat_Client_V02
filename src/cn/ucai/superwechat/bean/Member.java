@@ -12,12 +12,12 @@ public class Member extends User implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	private Integer MMemberId;
-	private Integer MMemberUserId;
-	private String MMemberUserName;
-	private Integer MMemberGroupId;
-	private String MMemberGroupHxid;
-	private Integer MMemberPermission;
+	private Integer mmemberId;
+	private Integer mmemberUserId;
+	private String mmemberUserName;
+	private Integer mmemberGroupId;
+	private String mmemberGroupHxid;
+	private Integer mmemberPermission;
 
 	// Constructors
 
@@ -29,68 +29,68 @@ public class Member extends User implements java.io.Serializable {
 	public Member(Integer MMemberUserId, String MMemberUserName,
 			Integer MMemberGroupId, String MMemberGroupHxid,
 			Integer MMemberPermission) {
-		this.MMemberUserId = MMemberUserId;
-		this.MMemberUserName = MMemberUserName;
-		this.MMemberGroupId = MMemberGroupId;
-		this.MMemberGroupHxid = MMemberGroupHxid;
-		this.MMemberPermission = MMemberPermission;
+		this.mmemberUserId = MMemberUserId;
+		this.mmemberUserName = MMemberUserName;
+		this.mmemberGroupId = MMemberGroupId;
+		this.mmemberGroupHxid = MMemberGroupHxid;
+		this.mmemberPermission = MMemberPermission;
 	}
 
 	// Property accessors
 	public Integer getMMemberId() {
-		return this.MMemberId;
+		return this.mmemberId;
 	}
 
 	public void setMMemberId(Integer MMemberId) {
-		this.MMemberId = MMemberId;
+		this.mmemberId = MMemberId;
 	}
 
 	public Integer getMMemberUserId() {
-		return this.MMemberUserId;
+		return this.mmemberUserId;
 	}
 
 	public void setMMemberUserId(Integer MMemberUserId) {
-		this.MMemberUserId = MMemberUserId;
+		this.mmemberUserId = MMemberUserId;
 	}
 
 	public String getMMemberUserName() {
-		return this.MMemberUserName;
+		return this.mmemberUserName;
 	}
 
 	public void setMMemberUserName(String MMemberUserName) {
-		this.MMemberUserName = MMemberUserName;
+		this.mmemberUserName = MMemberUserName;
 	}
 
 	public Integer getMMemberGroupId() {
-		return this.MMemberGroupId;
+		return this.mmemberGroupId;
 	}
 
 	public void setMMemberGroupId(Integer MMemberGroupId) {
-		this.MMemberGroupId = MMemberGroupId;
+		this.mmemberGroupId = MMemberGroupId;
 	}
 
 	public String getMMemberGroupHxid() {
-		return this.MMemberGroupHxid;
+		return this.mmemberGroupHxid;
 	}
 
 	public void setMMemberGroupHxid(String MMemberGroupHxid) {
-		this.MMemberGroupHxid = MMemberGroupHxid;
+		this.mmemberGroupHxid = MMemberGroupHxid;
 	}
 
 	public Integer getMMemberPermission() {
-		return this.MMemberPermission;
+		return this.mmemberPermission;
 	}
 
 	public void setMMemberPermission(Integer MMemberPermission) {
-		this.MMemberPermission = MMemberPermission;
+		this.mmemberPermission = MMemberPermission;
 	}
 
 	@Override
 	public String toString() {
-		return "Member [MMemberId=" + MMemberId + ", MMemberUserId="
-				+ MMemberUserId + ", MMemberUserName=" + MMemberUserName
-				+ ", MMemberGroupId=" + MMemberGroupId + ", MMemberGroupHxid="
-				+ MMemberGroupHxid + ", MMemberPermission=" + MMemberPermission
+		return "Member [MMemberId=" + mmemberId + ", MMemberUserId="
+				+ mmemberUserId + ", MMemberUserName=" + mmemberUserName
+				+ ", MMemberGroupId=" + mmemberGroupId + ", MMemberGroupHxid="
+				+ mmemberGroupHxid + ", MMemberPermission=" + mmemberPermission
 				+ "]";
 	}
 
