@@ -527,7 +527,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, EMEve
         if(members==null){
             try {
                 String path = new ApiParams()
-                        .with(I.Group.HX_ID, toChatUsername)
+                        .with(I.Member.GROUP_HX_ID, toChatUsername)
                         .getRequestUrl(I.REQUEST_DOWNLOAD_GROUP_MEMBERS_BY_HXID);
                 executeRequest(new GsonRequest<Member[]>(path,Member[].class,
                         responseDownloadGroupMembersListener(), errorListener()));

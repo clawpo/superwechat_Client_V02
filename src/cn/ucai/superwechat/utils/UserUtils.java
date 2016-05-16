@@ -107,7 +107,7 @@ public class UserUtils {
 
     public static void setGroupMemberAvatar(String hxid,String username,NetworkImageView imageView){
         Member user = getGroupMemberInfo(hxid,username);
-        setUserAvatar(user,imageView);
+        setMemberAvatar(user,imageView);
     }
 
     /**
@@ -135,11 +135,26 @@ public class UserUtils {
 	}
 
 
+    private static void setMemberAvatar(Member user, NetworkImageView imageView) {
+        if(user != null && user.getMMemberUserName()!=null){
+            String path = I.DOWNLOAD_USER_AVATAR_URL + user.getMMemberUserName();
+            imageView.setImageUrl(path, RequestManager.getImageLoader());
+        }else {
+            imageView.setErrorImageResId(R.drawable.default_avatar);
+        }
+    }
+
     private static void setUserAvatar(User user, NetworkImageView imageView){
         imageView.setDefaultImageResId(R.drawable.default_avatar);
-        if(user != null && user.getMAvatarPath() != null){
-            String path = I.DOWNLOAD_USER_AVATAR_URL + user.getMAvatarUserName();
-            imageView.setImageUrl(path,RequestManager.getImageLoader());
+        if(user != null ){
+            if(user.getMAvatarPath() != null) {
+                String path = I.DOWNLOAD_USER_AVATAR_URL + user.getMAvatarUserName();
+                imageView.setImageUrl(path, RequestManager.getImageLoader());
+            }
+            if(user.getMUserName()!=null){
+                String path = I.DOWNLOAD_USER_AVATAR_URL + user.getMUserName();
+                imageView.setImageUrl(path, RequestManager.getImageLoader());
+            }
         } else {
             imageView.setErrorImageResId(R.drawable.default_avatar);
         }

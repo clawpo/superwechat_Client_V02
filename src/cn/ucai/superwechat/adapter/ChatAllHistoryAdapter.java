@@ -98,7 +98,7 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 			EMGroup group = EMGroupManager.getInstance().getGroup(username);
 			holder.name.setText(group != null ? group.getGroupName() : username);
             if(group!=null) {
-                UserUtils.setGroupAvatar(group.getGroupName(), holder.avatar);
+                UserUtils.setGroupAvatar(group.getGroupId(), holder.avatar);
             }else{
                 UserUtils.setGroupAvatar("", holder.avatar);
             }
