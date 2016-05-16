@@ -154,17 +154,21 @@ public class NewGroupActivity extends BaseActivity {
     private void createNewGroup(final Intent data) {
         setProgressDialog();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
                 // 调用sdk创建群组方法
                 final String st2 = getResources().getString(R.string.Failed_to_create_groups);
                 String groupName = groupNameEditText.getText().toString().trim();
                 String desc = introductionEditText.getText().toString();
                 Contact[] members = (Contact[]) data.getSerializableExtra("newmembers");
-                String[] memberNames = new String[members.length];
-                for (int i=0;i<members.length;i++) {
-                    memberNames[i] = members[i].getMContactCname();
+                String[] memberNames = null;
+                if(members!=null && members.length>0) {
+                    memberNames = new String[members.length];
+                    for (int i = 0; i < members.length; i++) {
+                        Log.e(TAG, "contact=" + members[i]);
+                        memberNames[i] = members[i].getMContactCname();
+                    }
                 }
                 EMGroup emGroup;
                 try {
@@ -176,6 +180,7 @@ public class NewGroupActivity extends BaseActivity {
                         //创建不公开群
                         emGroup = EMGroupManager.getInstance().createPrivateGroup(groupName, desc, memberNames, memberCheckbox.isChecked(), 200);
                     }
+                    Log.e(TAG,"emGroup="+emGroup);
                     String userName = SuperWeChatApplication.getInstance().getUserName();
                     StringBuffer sbMemberBuffer = new StringBuffer();
                     sbMemberBuffer.append(userName);
@@ -193,15 +198,14 @@ public class NewGroupActivity extends BaseActivity {
                 } catch (Exception e){
                     e.printStackTrace();
                 }
-            }
-        }).start();
+//            }
+//        }).start();
     }
 
     private void createGroupAppServer(final String hxid, String groupName, String desc, boolean isPublic, boolean isExam, final Contact[] members){
         //注册环信的服务器 registerEMServer
         //先注册本地的服务器并上传头像 REQUEST_CREATE_GROUP -->okhttp
         //添加群成员
-
         File file = new File(ImageUtils.getAvatarPath(activity, I.AVATAR_TYPE_GROUP_PATH),
                 avatarName + I.AVATAR_SUFFIX_JPG);
         User user = SuperWeChatApplication.getInstance().getUser();
@@ -221,7 +225,17 @@ public class NewGroupActivity extends BaseActivity {
                     @Override
                     public void onSuccess(Group group) {
                         if(group.isResult()){
-                            addGroupMembers(group,members);
+                            if(members!=null) {
+                                addGroupMembers(group, members);
+                            }else{
+                                progressDialog.dismiss();
+                                Utils.showToast(mContext,R.string.Create_groups_Success,Toast.LENGTH_SHORT);
+                                finish();
+                            }
+                        }else{
+                            progressDialog.dismiss();
+                            Utils.showToast(mContext,Utils.getResourceString(mContext,group.getMsg()),Toast.LENGTH_SHORT);
+                            Log.e(TAG, Utils.getResourceString(mContext,group.getMsg()));
                         }
                     }
 
@@ -236,8 +250,8 @@ public class NewGroupActivity extends BaseActivity {
 
     private void addGroupMembers(Group group,Contact[] members) {
         try {
-            String userIds=null;
-            String userNames=null;
+            String userIds="";
+            String userNames="";
             for(int i=0;i<members.length;i++){
                 userIds+=members[i].getMContactCid()+",";
                 userNames+=members[i].getMContactCname()+",";

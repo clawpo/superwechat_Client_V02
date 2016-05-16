@@ -38,10 +38,12 @@ import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.adapter.ContactAdapter;
 import cn.ucai.superwechat.bean.Contact;
+import cn.ucai.superwechat.utils.Utils;
 import cn.ucai.superwechat.widget.Sidebar;
 
 
 public class GroupPickContactsActivity extends BaseActivity {
+    private static final String TAG = GroupPickContactsActivity.class.getName();
 	private ListView listView;
 	/** 是否为一个新建的群组 */
 	protected boolean isCreatingNewGroup;
@@ -105,7 +107,7 @@ public class GroupPickContactsActivity extends BaseActivity {
 	 * @param v
 	 */
 	public void save(View v) {
-		setResult(RESULT_OK, new Intent().putExtra("newmembers", getToBeAddMembers().toArray(new String[0])));
+		setResult(RESULT_OK, new Intent().putExtra("newmembers", getToBeAddMembers()));
 		finish();
 	}
 
@@ -114,17 +116,19 @@ public class GroupPickContactsActivity extends BaseActivity {
 	 * 
 	 * @return
 	 */
-	private List<Contact> getToBeAddMembers() {
-		List<Contact> members = new ArrayList<Contact>();
+	private Contact[] getToBeAddMembers() {
 		int length = contactAdapter.isCheckedArray.length;
+		Contact[] members = new Contact[0];
 		for (int i = 0; i < length; i++) {
 			Contact contact = contactAdapter.getItem(i);
 			if (contactAdapter.isCheckedArray[i] && !exitingMembers.contains(contact.getMContactCname())) {
-				members.add(contact);
+                members = Utils.add(members,contact);
 			}
 		}
-
-		return members;
+        if(members.length>0){
+            return members;
+        }
+		return null;
 	}
 
 	/**
