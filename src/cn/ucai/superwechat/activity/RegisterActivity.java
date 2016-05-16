@@ -58,6 +58,7 @@ public class RegisterActivity extends BaseActivity {
     String username;
     String nick;
     String pwd;
+	String avatarName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +79,7 @@ public class RegisterActivity extends BaseActivity {
         findViewById(R.id.layout_user_avatar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnSetAvatarListener = new OnSetAvatarListener(mContext,R.id.layout_register,getUserName(),"user_avatar");
+                mOnSetAvatarListener = new OnSetAvatarListener(mContext,R.id.layout_register,getUserName(),I.AVATAR_TYPE_USER_PATH);
             }
         });
     }
@@ -149,7 +150,7 @@ public class RegisterActivity extends BaseActivity {
         //如果环信的服务器注册失败，删除服务器上面的账号和头像 unRegister-->volley
 
         File file = new File(ImageUtils.getAvatarPath(activity, I.AVATAR_TYPE_USER_PATH),
-                username + I.AVATAR_SUFFIX_JPG);
+                avatarName + I.AVATAR_SUFFIX_JPG);
 //        String extName = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf("."));
         OkHttpUtils<Message> utils = new OkHttpUtils<Message>();
         utils.url(SuperWeChatApplication.SERVER_ROOT)//设置服务端根地址
@@ -253,11 +254,7 @@ public class RegisterActivity extends BaseActivity {
 	}
 
     public String getUserName() {
-        String username = userNameEditText.getText().toString();
-        if(username.isEmpty()){
-            Utils.showToast(mContext,"请先输入用户名",Toast.LENGTH_SHORT);
-            return null;
-        }
-        return username;
+        avatarName = System.currentTimeMillis()+"";
+        return avatarName;
     }
 }

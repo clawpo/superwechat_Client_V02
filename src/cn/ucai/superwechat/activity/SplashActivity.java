@@ -15,11 +15,10 @@ import com.easemob.chat.EMGroupManager;
 import cn.ucai.superwechat.DemoHXSDKHelper;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
-import cn.ucai.superwechat.bean.UserBean;
+import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.db.UserDao;
 import cn.ucai.superwechat.task.DownloadAllGroupTask;
 import cn.ucai.superwechat.task.DownloadContactListTask;
-import cn.ucai.superwechat.task.DownloadContactTask;
 import cn.ucai.superwechat.task.DownloadPublicGroupTask;
 
 /**
@@ -55,10 +54,8 @@ public class SplashActivity extends BaseActivity {
         if (DemoHXSDKHelper.getInstance().isLogined()) {
             String userName = SuperWeChatApplication.getInstance().getUserName();
             UserDao dao = new UserDao(mContext);
-            UserBean user = dao.findUserByUserName(userName);
+            User user = dao.findUserByUserName(userName);
             SuperWeChatApplication.getInstance().setUser(user);
-            //下载联系人列表//REQUEST_DOWNLOAD_CONTACTS  intent:update_contact_list
-            new DownloadContactTask(mContext,userName,0,20).execute();
             //下载好友列表
             new DownloadContactListTask(mContext,userName,0,20).execute();
             //下载群组列表
