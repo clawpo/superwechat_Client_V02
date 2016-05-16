@@ -2,6 +2,7 @@ package cn.ucai.superwechat.task;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.android.volley.Response;
 
@@ -52,8 +53,10 @@ public class DownloadAllGroupTask extends BaseActivity {
                 if(groupList==null){
                     return;
                 }
+                Log.e(TAG,"groupList.size="+groupList.length);
                 ArrayList<Group> list = SuperWeChatApplication.getInstance().getGroupList();
                 ArrayList<Group> groups = Utils.array2List(groupList);
+                list.clear();
                 list.addAll(groups);
                 Intent intent = new Intent("update_group");
                 mContext.sendStickyBroadcast(intent);

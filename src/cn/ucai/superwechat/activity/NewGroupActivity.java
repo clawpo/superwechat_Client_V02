@@ -228,6 +228,9 @@ public class NewGroupActivity extends BaseActivity {
                             if(members!=null) {
                                 addGroupMembers(group, members);
                             }else{
+                                SuperWeChatApplication.getInstance().getGroupList().add(group);
+                                Intent intent = new Intent("update_group").putExtra("group",group);
+                                setResult(RESULT_OK,intent);
                                 progressDialog.dismiss();
                                 Utils.showToast(mContext,R.string.Create_groups_Success,Toast.LENGTH_SHORT);
                                 finish();
@@ -278,6 +281,7 @@ public class NewGroupActivity extends BaseActivity {
                     Utils.showToast(mContext,Utils.getResourceString(mContext,I.MSG_GROUP_CREATE_SCUUESS),Toast.LENGTH_LONG);
                     SuperWeChatApplication.getInstance().getGroupList().add(group);
                     Intent intent = new Intent("update_group").putExtra("group",group);
+                    Utils.showToast(mContext,Utils.getResourceString(mContext,group.getMsg()),Toast.LENGTH_SHORT);
                     setResult(RESULT_OK,intent);
                 } else {
                     progressDialog.dismiss();

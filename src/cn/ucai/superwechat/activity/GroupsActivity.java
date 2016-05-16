@@ -195,7 +195,7 @@ public class GroupsActivity extends BaseActivity {
         switch (requestCode) {
             case REQUEST_NEW_GROUP:
                 Group group=(Group) data.getSerializableExtra("group");
-                groupAdapter.addItem(group);//将新建的群显示在列表中
+//                groupAdapter.addItem(group);//将新建的群显示在列表中
                 break;
         }
 
