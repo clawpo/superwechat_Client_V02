@@ -102,14 +102,20 @@ public class Member extends User implements java.io.Serializable {
 
 		Member member = (Member) o;
 
-		return getMMemberId().equals(member.getMMemberId());
+		if (!mmemberUserId.equals(member.mmemberUserId)) return false;
+		if (!mmemberUserName.equals(member.mmemberUserName)) return false;
+		if (!mmemberGroupId.equals(member.mmemberGroupId)) return false;
+		return mmemberGroupHxid.equals(member.mmemberGroupHxid);
 
 	}
 
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = 31 * result + getMMemberId().hashCode();
+		result = 31 * result + mmemberUserId.hashCode();
+		result = 31 * result + mmemberUserName.hashCode();
+		result = 31 * result + mmemberGroupId.hashCode();
+		result = 31 * result + mmemberGroupHxid.hashCode();
 		return result;
 	}
 }

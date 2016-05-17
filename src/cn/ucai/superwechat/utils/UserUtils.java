@@ -140,7 +140,7 @@ public class UserUtils {
 	}
 
 
-    private static void setMemberAvatar(Member user, NetworkImageView imageView) {
+    public static void setMemberAvatar(Member user, NetworkImageView imageView) {
         if(user != null && user.getMMemberUserName()!=null){
             String path = I.DOWNLOAD_USER_AVATAR_URL + user.getMMemberUserName();
             imageView.setImageUrl(path, RequestManager.getImageLoader());
